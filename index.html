@@ -7,6 +7,33 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+.navbar{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:30px;
+margin-bottom:50px;
+font-size:15px;
+font-weight:500;
+}
+
+.navbar a{
+text-decoration:none;
+color:#1a1f2b;
+transition:0.3s;
+}
+
+.navbar a:hover{
+color:#1b4f9c;
+}
+
+.nav-btn{
+background:#0f172a;
+color:white !important;
+padding:10px 18px;
+border-radius:12px;
+}
+
 <style>
 body{
 margin:0;
@@ -82,6 +109,13 @@ padding-bottom:80px;
 </head>
 
 <body>
+
+<div class="navbar">
+<a href="#">Home</a>
+<a href="#">Vision</a>
+<a href="#">Ecosystem</a>
+<a href="#" class="nav-btn">Whitepaper</a>
+</div>
 
 <div class="container">
 <img src="logo.png" class="logo" alt="HEIZO Logo">
