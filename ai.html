@@ -185,7 +185,54 @@ transition:all 0.8s ease;
 opacity:1;
 transform:translateY(0);
 }
+.chat-box{
+margin-top:40px;
+background:white;
+border-radius:20px;
+padding:25px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+min-height:250px;
+text-align:left;
+}
 
+.message{
+max-width:80%;
+padding:14px 18px;
+border-radius:16px;
+margin-bottom:15px;
+line-height:1.6;
+}
+
+.ai{
+background:#eef6ff;
+color:#0f2747;
+}
+
+.input-area{
+margin-top:20px;
+display:flex;
+gap:10px;
+}
+
+.input-area input{
+flex:1;
+padding:15px;
+border:none;
+border-radius:14px;
+background:white;
+box-shadow:0 4px 12px rgba(0,0,0,0.08);
+font-size:16px;
+}
+
+.input-area button{
+padding:15px 25px;
+border:none;
+border-radius:14px;
+background:#0f2747;
+color:white;
+font-weight:600;
+cursor:pointer;
+  }
 </style>
 </head>
 
@@ -207,6 +254,28 @@ transform:translateY(0);
 Your intelligent assistant for creativity, productivity and ideas.
 </p>
 
+<div class="chat-box">
+
+<div class="message ai">
+Hello. I am HEIZO AI.
+
+How can I help you today?
+</div>
+
+</div>
+
+<div class="input-area">
+
+<input
+type="text"
+placeholder="Ask anything..."
+>
+
+<button>
+Send
+</button>
+
+</div>
 
 <div class="footer-message">
 Building for the future.
