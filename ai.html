@@ -296,7 +296,29 @@ entry.target.classList.add("show");
 document.querySelectorAll(".fade-up").forEach(el=>{
 observer.observe(el);
 });
+const input = document.querySelector("input");
+const button = document.querySelector("button");
+const chatBox = document.querySelector(".chat-box");
 
+button.addEventListener("click", () => {
+
+if(input.value.trim() === "") return;
+
+const userMessage = document.createElement("div");
+
+userMessage.className = "message";
+userMessage.style.background = "#ffffff";
+userMessage.style.marginLeft = "auto";
+
+userMessage.textContent = input.value;
+
+chatBox.appendChild(userMessage);
+
+input.value = "";
+
+chatBox.scrollTop = chatBox.scrollHeight;
+
+});
 </script>
 </body>
 </html>
