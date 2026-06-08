@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HEIZO</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+
+<style>
+.navbar{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:25px;
+margin-top:15px;
+margin-bottom:30px;
+font-size:15px;
+font-weight:500;
+}
+
+.navbar a{
+text-decoration:none;
+color:#1a1f2b;
+transition:all 0.3s ease;
+display:inline-block;
+}
+
+.navbar a:hover{
+color:#1b4f9c;
+transform:translateY(-2px);
+}
+
+.nav-btn{
+background:#0f172a;
+color:white !important;
+padding:10px 18px;
+border-radius:12px;
+}
+
+
+body{
+margin:0;
+font-family:Inter, sans-serif;
+background:
+linear-gradient(
+to bottom,
+#ffffff 0%,
+#ffffff 45%,
+#f7f8fa 70%,
+#eef1f5 100%
+);
+color:#1a1f2b;
+text-align:center;
+}
+
+.container{
+padding:40px 20px 30px 20px;
+}
+
+.logo{
+width:150px;
+border-radius:20px;
+margin-bottom:20px;
+box-shadow:
+0 12px 30px rgba(0,0,0,0.45),
+0 0 25px rgba(27,79,156,0.20);
+}
+
+h1{
+font-size:50px;
+margin:10px 0 25px 0;
+}
+
+h2{
+margin-bottom:35px;
+} 
+
+p{
+font-size:18px;
+max-width:550px;
+margin:auto;
+line-height:1.6;
+margin-bottom:0;
+}
+
+.btn{
+display:inline-block;
+margin-top:45px;
+padding:16px 36px;
+background:white;
+color:#102842;
+text-decoration:none;
+border-radius:14px;
+font-weight:600;
+box-shadow:0 18px 40px rgba(0,0,0,0.20);
+transition:0.25s ease;
+}
+
+.btn:hover{
+transform:translateY(-2px);
+}
+
+.section{
+margin-top:60px;
+}
+
+.ecosystem{
+margin-top:40px;
+padding-bottom:80px;
+}
+.home-values{
+margin-top:80px;
+}
+
+.value-item{
+padding:45px 0;
+border-top:1px solid rgba(16,40,66,0.08);
+}
+
+.value-item h2{
+font-size:18px;
+letter-spacing:3px;
+font-weight:700;
+color:#102842;
+margin-bottom:15px;
+}
+
+.value-item p{
+font-size:16px;
+color:#4a5568;
+margin:0;
+}
+
+.footer-message{
+margin-top:60px;
+padding:50px 20px 70px;
+text-align:center;
+font-size:22px;
+font-weight:600;
+letter-spacing:2px;
+color:#102842;
+opacity:0.85;
+}
+
+.footer-brand{
+display:block;
+margin-top:18px;
+font-size:32px;
+font-weight:700;
+letter-spacing:6px;
+color:#102842;
+}
+.status-bar{
+margin-top:100px;
+padding:70px 0;
+border-top:1px solid rgba(16,40,66,0.08);
+border-bottom:1px solid rgba(16,40,66,0.08);
+}
+
+.status-item{
+padding:35px 0;
+}
+
+.status-item h3{
+font-size:14px;
+letter-spacing:4px;
+color:#102842;
+margin-bottom:8px;
+}
+
+.status-item p{
+font-size:15px;
+color:#6b7280;
+}
+
+.fade-up{
+opacity:0;
+transform:translateY(30px);
+transition:all 0.8s ease;
+}
+
+.fade-up.show{
+opacity:1;
+transform:translateY(0);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+<a href="index.html" class="nav-btn">Home</a>
+<a href="vision.html">Vision</a>
+<a href="ecosystem.html">Ecosystem</a>
+<a href="whitepaper.html">Whitepaper</a>
+</div>
+
+<div class="container">
+<img src="logo.png" class="logo" alt="HEIZO Logo">
+<h1>HEIZO</h1>
+
+<p>
+Building a long-term ecosystem where technology, artificial intelligence, blockchain and future digital products converge under a single vision.
+</p>
+
+<a class="btn" href="vision.html">
+Explore Vision
+</a>
+<div class="home-values">
+
+<div class="value-item fade-up">
+<h2>INNOVATION</h2>
+<p>Exploring new possibilities.</p>
+</div>
+
+<div class="value-item fade-up">
+<h2>ADAPTABILITY</h2>
+<p>Built to evolve with time.</p>
+</div>
+
+<div class="value-item fade-up">
+<h2>UNIFIED IDENTITY</h2>
+<p>One vision. Multiple futures.</p>
+</div>
+
+</div>
+<div class="status-bar fade-up">
+
+<div class="status-item">
+<h3>VISION</h3>
+<p>Established</p>
+</div>
+
+<div class="status-item">
+<h3>ECOSYSTEM</h3>
+<p>Expanding</p>
+</div>
+
+<div class="status-item">
+<h3>CONTRACT</h3>
+<p>Pending Verification</p>
+</div>
+
+</div>
+
+<div class="footer-message">
+Building for the future.
+<br>
+
+<span class="footer-brand">HEIZO</span>
+</div>
+
+<script>
+
+const observer = new IntersectionObserver((entries)=>{
+entries.forEach(entry=>{
+if(entry.isIntersecting){
+entry.target.classList.add("show");
+}
+});
+});
+
+document.querySelectorAll(".fade-up").forEach(el=>{
+observer.observe(el);
+});
+
+</script>
+</body>
+</html>
+
+
