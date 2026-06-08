@@ -321,6 +321,20 @@ userMessage.textContent = input.value;
 
 chatBox.appendChild(userMessage);
 
+setTimeout(() => {
+
+const aiMessage = document.createElement("div");
+
+aiMessage.className = "message ai";
+
+aiMessage.textContent = "HEIZO AI is currently in beta. Advanced responses will be available soon.";
+
+chatBox.appendChild(aiMessage);
+
+chatBox.scrollTop = chatBox.scrollHeight;
+
+}, 800);
+
 input.value = "";
 
 chatBox.scrollTop = chatBox.scrollHeight;
