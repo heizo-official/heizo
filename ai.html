@@ -196,11 +196,12 @@ text-align:left;
 }
 
 .message{
-max-width:80%;
+max-width:75%;
 padding:14px 18px;
-border-radius:16px;
-margin-bottom:15px;
+border-radius:18px;
+margin:12px;
 line-height:1.6;
+word-wrap:break-word;
 }
 
 .ai{
@@ -309,6 +310,9 @@ const userMessage = document.createElement("div");
 userMessage.className = "message";
 userMessage.style.background = "#ffffff";
 userMessage.style.marginLeft = "auto";
+userMessage.style.border = "1px solid #d8dde5";
+userMessage.style.borderRadius = "18px";
+userMessage.style.marginRight = "12px";
 
 userMessage.textContent = input.value;
 
