@@ -344,16 +344,16 @@ chatHistory.forEach(msg => {
 if(msg.type === "ai"){
     const copyBtn = document.createElement("div");
     copyBtn.className = "copy-btn";
-    copyBtn.innerText = "Copy";
+    copyBtn.innerHTML = "⧉";
 
     copyBtn.onclick = () => {
         navigator.clipboard.writeText(msg.text);
     };
 
-    message.appendChild(copyBtn);
+chatBox.appendChild(message);
+chatBox.appendChild(copyBtn);
+return;
 }
-
-    chatBox.appendChild(message);
 
 });
 setTimeout(() => {
