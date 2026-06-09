@@ -318,12 +318,11 @@ observer.observe(el);
 const input = document.querySelector("input");
 const button = document.querySelector("button");
 const chatBox = document.querySelector(".chat-box");
-input.addEventListener("keydown", (event) => {
+input.addEventListener("keypress", (event) => {
 
     if(event.key === "Enter"){
-
-        button.click();
-
+    event.preventDefault();
+    button.click();
     }
 
 });
@@ -410,6 +409,7 @@ userMessage.style.borderRadius = "18px";
 userMessage.style.marginRight = "12px";
 
 userMessage.textContent = input.value;
+input.value = "";
 
 chatBox.appendChild(userMessage);
 chatHistory.push({
