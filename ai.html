@@ -247,6 +247,20 @@ color:white;
 font-weight:600;
 cursor:pointer;
   }
+
+.copy-btn{
+    margin-top:8px;
+    font-size:13px;
+    color:#6b7280;
+    cursor:pointer;
+    user-select:none;
+    width:fit-content;
+}
+
+.copy-btn:hover{
+    color:#0f172a;
+}
+
 </style>
 </head>
 
@@ -328,8 +342,15 @@ chatHistory.forEach(msg => {
     message.innerHTML = msg.text;
 
 if(msg.type === "ai"){
-    message.innerHTML +=
-    '<span class="copy-btn" onclick="navigator.clipboard.writeText(this.parentElement.innerText.replace(\'📋\', \'\'))">📋</span>';
+    const copyBtn = document.createElement("div");
+    copyBtn.className = "copy-btn";
+    copyBtn.innerText = "Copy";
+
+    copyBtn.onclick = () => {
+        navigator.clipboard.writeText(msg.text);
+    };
+
+    message.appendChild(copyBtn);
 }
 
     chatBox.appendChild(message);
@@ -386,9 +407,19 @@ const aiMessage = document.createElement("div");
 
 aiMessage.className = "message ai";
 
-aiMessage.innerHTML =
-(data.reply || "No response") +
-'<span class="copy-btn" onclick="navigator.clipboard.writeText(this.parentElement.innerText.replace(\'📋\', \'\'))">📋</span>';
+aiMessage.textContent = data.reply || "No response";
+
+const copyBtn = document.createElement("div");
+
+copyBtn.className = "copy-btn";
+
+copyBtn.innerText = "Copy";
+
+copyBtn.onclick = () => {
+    navigator.clipboard.writeText(aiMessage.textContent);
+};
+
+aiMessage.appendChild(copyBtn);
 
 chatBox.appendChild(aiMessage);
 chatHistory.push({
