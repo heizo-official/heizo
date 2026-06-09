@@ -196,6 +196,7 @@ text-align:left;
 display:flex;
 flex-direction:column;
 gap:12px;
+padding-bottom:120px;
 }
 
 .message{
@@ -213,9 +214,15 @@ color:#0f2747;
 }
 
 .input-area{
-margin-top:20px;
-display:flex;
-gap:10px;
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    display:flex;
+    gap:10px;
+    padding:12px;
+    background:#f5f7fb;
+    z-index:1000;
 }
 
 .input-area input{
