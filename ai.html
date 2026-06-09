@@ -348,8 +348,29 @@ if(msg.type === "ai"){
     copyBtn.innerHTML = "⧉";
 
     copyBtn.onclick = () => {
-        navigator.clipboard.writeText(msg.text);
-    };
+    navigator.clipboard.writeText(msg.text);
+
+    const toast = document.createElement("div");
+
+    toast.innerText = "Copied";
+
+    toast.style.position = "fixed";
+    toast.style.bottom = "90px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.background = "#111827";
+    toast.style.color = "white";
+    toast.style.padding = "8px 14px";
+    toast.style.borderRadius = "10px";
+    toast.style.fontSize = "14px";
+    toast.style.zIndex = "9999";
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 1500);
+};
 
 chatBox.appendChild(message);
 chatBox.appendChild(copyBtn);
@@ -419,7 +440,30 @@ copyBtn.className = "copy-btn";
 copyBtn.innerHTML = "⧉";
 
 copyBtn.onclick = () => {
+
     navigator.clipboard.writeText(aiMessage.textContent);
+
+    const toast = document.createElement("div");
+
+    toast.innerText = "Copiado";
+
+    toast.style.position = "fixed";
+    toast.style.bottom = "100px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.background = "#0f172a";
+    toast.style.color = "white";
+    toast.style.padding = "8px 14px";
+    toast.style.borderRadius = "10px";
+    toast.style.fontSize = "14px";
+    toast.style.zIndex = "9999";
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 1500);
+
 };
 
 chatBox.appendChild(aiMessage);
