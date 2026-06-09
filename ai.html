@@ -413,15 +413,14 @@ const copyBtn = document.createElement("div");
 
 copyBtn.className = "copy-btn";
 
-copyBtn.innerText = "Copy";
+copyBtn.innerHTML = "⧉";
 
 copyBtn.onclick = () => {
     navigator.clipboard.writeText(aiMessage.textContent);
 };
 
-aiMessage.appendChild(copyBtn);
-
 chatBox.appendChild(aiMessage);
+chatBox.appendChild(copyBtn);
 chatHistory.push({
     type: "ai",
     text: aiMessage.textContent
