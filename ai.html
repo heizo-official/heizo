@@ -303,6 +303,33 @@ observer.observe(el);
 const input = document.querySelector("input");
 const button = document.querySelector("button");
 const chatBox = document.querySelector(".chat-box");
+let chatHistory = JSON.parse(localStorage.getItem("heizoChat")) || [];
+
+chatHistory.forEach(msg => {
+
+    const message = document.createElement("div");
+
+    if (msg.type === "user") {
+
+        message.className = "message";
+
+        message.style.background = "#ffffff";
+        message.style.marginLeft = "auto";
+        message.style.border = "1px solid #d8dde5";
+        message.style.borderRadius = "18px";
+        message.style.marginRight = "12px";
+
+    } else {
+
+        message.className = "message ai";
+
+    }
+
+    message.textContent = msg.text;
+
+    chatBox.appendChild(message);
+
+});
 
 button.addEventListener("click", async () => {
 
@@ -320,6 +347,15 @@ userMessage.style.marginRight = "12px";
 userMessage.textContent = input.value;
 
 chatBox.appendChild(userMessage);
+chatHistory.push({
+    type: "user",
+    text: input.value
+});
+
+localStorage.setItem(
+    "heizoChat",
+    JSON.stringify(chatHistory)
+);
 
 try {
 
@@ -354,6 +390,15 @@ aiMessage.className = "message ai";
 aiMessage.textContent = "Connection error";
 
 chatBox.appendChild(aiMessage);
+chatHistory.push({
+    type: "ai",
+    text: aiMessage.textContent
+});
+
+localStorage.setItem(
+    "heizoChat",
+    JSON.stringify(chatHistory)
+);
 
 }
 
