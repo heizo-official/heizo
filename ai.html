@@ -338,7 +338,10 @@ chatHistory.forEach(msg => {
 
 });
 setTimeout(() => {
-    chatBox.scrollTop = chatBox.scrollHeight;
+    window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "instant"
+    });
 }, 100);
 
 button.addEventListener("click", async () => {
