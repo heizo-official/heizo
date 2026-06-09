@@ -325,7 +325,12 @@ chatHistory.forEach(msg => {
 
     }
 
-    message.textContent = msg.text;
+    message.innerHTML = msg.text;
+
+if(msg.type === "ai"){
+    message.innerHTML +=
+    '<span class="copy-btn" onclick="navigator.clipboard.writeText(this.parentElement.innerText.replace(\'📋\', \'\'))">📋</span>';
+}
 
     chatBox.appendChild(message);
 
@@ -381,7 +386,9 @@ const aiMessage = document.createElement("div");
 
 aiMessage.className = "message ai";
 
-aiMessage.textContent = data.reply || "No response";
+aiMessage.innerHTML =
+(data.reply || "No response") +
+'<span class="copy-btn" onclick="navigator.clipboard.writeText(this.parentElement.innerText.replace(\'📋\', \'\'))">📋</span>';
 
 chatBox.appendChild(aiMessage);
 chatHistory.push({
