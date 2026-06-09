@@ -378,6 +378,15 @@ aiMessage.className = "message ai";
 aiMessage.textContent = data.reply || "No response";
 
 chatBox.appendChild(aiMessage);
+chatHistory.push({
+    type: "ai",
+    text: aiMessage.textContent
+});
+
+localStorage.setItem(
+    "heizoChat",
+    JSON.stringify(chatHistory)
+);
 
 chatBox.scrollTop = chatBox.scrollHeight;
 
@@ -390,15 +399,6 @@ aiMessage.className = "message ai";
 aiMessage.textContent = "Connection error";
 
 chatBox.appendChild(aiMessage);
-chatHistory.push({
-    type: "ai",
-    text: aiMessage.textContent
-});
-
-localStorage.setItem(
-    "heizoChat",
-    JSON.stringify(chatHistory)
-);
 
 }
 
