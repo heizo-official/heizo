@@ -408,13 +408,14 @@ userMessage.style.border = "1px solid #d8dde5";
 userMessage.style.borderRadius = "18px";
 userMessage.style.marginRight = "12px";
 
-userMessage.textContent = input.value;
+const userText = input.value;
+userMessage.textContent = userText;
 input.value = "";
 
 chatBox.appendChild(userMessage);
 chatHistory.push({
     type: "user",
-    text: input.value
+    text: userText
 });
 
 localStorage.setItem(
@@ -430,7 +431,7 @@ headers: {
 "Content-Type": "application/json"
 },
 body: JSON.stringify({
-message: input.value
+message: userText
 })
 });
 
