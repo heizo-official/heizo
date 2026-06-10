@@ -522,27 +522,9 @@ copyBtn.onclick = () => {
 chatBox.appendChild(aiMessage);
 chatBox.appendChild(copyBtn);
 
-let i = 0;
+aiMessage.textContent = fullReply;
 
-const typingSpeed =
-fullReply.length > 2000 ? 2 :
-fullReply.length > 1000 ? 4 :
-fullReply.length > 500 ? 8 :
-15;
-
-const typingEffect = setInterval(() => {
-
-    aiMessage.textContent += fullReply.slice(i, i + 12);
-    
-    chatBox.scrollTop = chatBox.scrollHeight;
-    
-    i += 12;
-
-    if (i >= fullReply.length) {
-        clearInterval(typingEffect);
-    }
-
-}, typingSpeed);
+chatBox.scrollTop = chatBox.scrollHeight;
 
 const userTop = userMessage.offsetTop;
 
