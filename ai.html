@@ -446,6 +446,8 @@ setTimeout(() => {
 
 try {
 
+console.log("Enviando pregunta");
+
 const response = await fetch("https://noisy-boat-15c3.heizoai.workers.dev/", {
 method: "POST",
 headers: {
@@ -464,6 +466,8 @@ if (!response.ok) {
 }
 
 const data = await response.json();
+
+console.log("Respuesta recibida");
 
 thinkingMessage.remove();
 
