@@ -457,6 +457,12 @@ history: chatHistory.slice(-100)
 })
 });
 
+if (!response.ok) {
+    throw new Error(
+        "HTTP Error: " + response.status
+    );
+}
+
 const data = await response.json();
 
 thinkingMessage.remove();
@@ -545,6 +551,8 @@ localStorage.setItem(
 
 
 } catch (error) {
+
+console.error(error);
 
 thinkingMessage.remove();
 
