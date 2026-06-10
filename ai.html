@@ -506,7 +506,12 @@ localStorage.setItem(
     JSON.stringify(chatHistory)
 );
 
-chatBox.scrollTop = chatBox.scrollHeight;
+setTimeout(() => {
+    aiMessage.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+}, 100);
 
 } catch (error) {
 
