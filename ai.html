@@ -388,6 +388,12 @@ return;
 chatBox.appendChild(message);
 
 });
+setTimeout(() => {
+    window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "instant"
+    });
+}, 100);
 
 button.addEventListener("click", async () => {
 
@@ -425,7 +431,12 @@ thinkingMessage.innerHTML = "⏳ Heizo está pensando...";
 
 chatBox.appendChild(thinkingMessage);
 
-chatBox.scrollTop = chatBox.scrollHeight;
+setTimeout(() => {
+  aiMessage.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}, 100);
 
 try {
 
