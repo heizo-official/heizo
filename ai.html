@@ -395,9 +395,16 @@ setTimeout(() => {
     });
 }, 100);
 
+let isGenerating = false;
+
 button.addEventListener("click", async () => {
 
 if(input.value.trim() === "") return;
+if(isGenerating) return;
+
+isGenerating = true;
+
+button.disabled = true;
 
 const userMessage = document.createElement("div");
 
@@ -554,9 +561,13 @@ localStorage.setItem(
     JSON.stringify(chatHistory)
 );
 
-
+isGenerating = false;
+button.disabled = false;
 
 } catch (error) {
+
+isGenerating = false;
+button.disabled = false;
 
 console.error(error);
 
