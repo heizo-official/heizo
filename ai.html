@@ -472,7 +472,9 @@ if (!response.ok) {
     );
 }
 
-const data = await response.json();
+const reader = response.body.getReader();
+const decoder = new TextDecoder();
+let fullReply = "";
 
 console.log("Respuesta recibida");
 
@@ -481,8 +483,6 @@ thinkingMessage.remove();
 const aiMessage = document.createElement("div");
 
 aiMessage.className = "message ai";
-
-const fullReply = data.reply || "No response";
 
 aiMessage.textContent = "";
 
@@ -522,7 +522,20 @@ copyBtn.onclick = () => {
 chatBox.appendChild(aiMessage);
 chatBox.appendChild(copyBtn);
 
-aiMessage.textContent = fullReply;
+while (true) {
+
+    const { done, value } = await reader.read();
+
+    if (done) break;
+
+    const chunk = decoder.decode(value);
+
+    fullReply += chunk;
+
+    aiMessage.textContent = fullReply;
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
 
 chatBox.scrollTop = chatBox.scrollHeight;
 
