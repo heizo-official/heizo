@@ -413,6 +413,12 @@ userMessage.textContent = userText;
 input.value = "";
 
 chatBox.appendChild(userMessage);
+
+userMessage.scrollIntoView({
+    behavior: "instant",
+    block: "start"
+});
+
 chatHistory.push({
     type: "user",
     text: userText
@@ -431,12 +437,7 @@ thinkingMessage.innerHTML = "⏳ Heizo está pensando...";
 
 chatBox.appendChild(thinkingMessage);
 
-setTimeout(() => {
-  aiMessage.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
-}, 100);
+
 
 try {
 
@@ -506,12 +507,7 @@ localStorage.setItem(
     JSON.stringify(chatHistory)
 );
 
-setTimeout(() => {
-    aiMessage.scrollIntoView({
-        behavior: "smooth",
-        block: "center"
-    });
-}, 100);
+
 
 } catch (error) {
 
