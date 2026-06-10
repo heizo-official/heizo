@@ -530,6 +530,8 @@ chatBox.appendChild(copyBtn);
 
     const chunk = decoder.decode(value);
 
+    console.log("CHUNK:", chunk);
+
     const lines = chunk.split("\n");
 
     for (const line of lines) {
@@ -553,7 +555,9 @@ chatBox.appendChild(copyBtn);
 
             chatBox.scrollTop = chatBox.scrollHeight;
 
-        } catch (e) {}
+        catch (e) {
+    console.error("ERROR SSE:", e);
+        }
 
     }
 
