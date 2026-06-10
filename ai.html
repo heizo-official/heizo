@@ -507,6 +507,12 @@ chatBox.appendChild(copyBtn);
 
 let i = 0;
 
+const typingSpeed =
+fullReply.length > 2000 ? 2 :
+fullReply.length > 1000 ? 4 :
+fullReply.length > 500 ? 8 :
+15;
+
 const typingEffect = setInterval(() => {
 
     aiMessage.textContent += fullReply.charAt(i);
@@ -517,7 +523,7 @@ const typingEffect = setInterval(() => {
         clearInterval(typingEffect);
     }
 
-}, 15);
+}, typingSpeed);
 
 const userTop = userMessage.offsetTop;
 
