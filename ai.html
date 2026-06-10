@@ -465,7 +465,8 @@ const aiMessage = document.createElement("div");
 
 aiMessage.className = "message ai";
 
-aiMessage.textContent = data.reply || "No response";
+aiMessage.textContent = "";
+const fullReply = data.reply || "No response";
 
 const copyBtn = document.createElement("div");
 
@@ -503,6 +504,12 @@ copyBtn.onclick = () => {
 chatBox.appendChild(aiMessage);
 chatBox.appendChild(copyBtn);
 
+const userTop = userMessage.offsetTop;
+
+window.scrollTo({
+    top: userTop - 120,
+    behavior: "smooth"
+});
 
 chatHistory.push({
     type: "ai",
