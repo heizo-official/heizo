@@ -455,7 +455,7 @@ headers: {
 },
 body: JSON.stringify({
 message: userText,
-history: chatHistory.slice(-100)
+history: chatHistory.slice(-50)
 })
 });
 
@@ -525,9 +525,11 @@ fullReply.length > 500 ? 8 :
 
 const typingEffect = setInterval(() => {
 
-    aiMessage.textContent += fullReply.slice(i, i + 6);
-
-    i += 6;
+    aiMessage.textContent += fullReply.slice(i, i + 12);
+    
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+    i += 12;
 
     if (i >= fullReply.length) {
         clearInterval(typingEffect);
