@@ -522,7 +522,7 @@ copyBtn.onclick = () => {
 chatBox.appendChild(aiMessage);
 chatBox.appendChild(copyBtn);
 
-while (true) {
+    while (true) {
 
     const { done, value } = await reader.read();
 
@@ -530,11 +530,34 @@ while (true) {
 
     const chunk = decoder.decode(value);
 
-    fullReply += chunk;
+    const lines = chunk.split("\n");
 
-    aiMessage.textContent = fullReply;
+    for (const line of lines) {
 
-    chatBox.scrollTop = chatBox.scrollHeight;
+        if (!line.startsWith("data: ")) continue;
+
+        const data = line.replace("data: ", "").trim();
+
+        if (data === "[DONE]") continue;
+
+        try {
+
+            const json = JSON.parse(data);
+
+            const content =
+                json.choices?.[0]?.delta?.content || "";
+
+            fullReply += content;
+
+            aiMessage.textContent = fullReply;
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+        } catch (e) {}
+
+    }
+
+    }
 }
 
 chatBox.scrollTop = chatBox.scrollHeight;
