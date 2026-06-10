@@ -465,7 +465,9 @@ const aiMessage = document.createElement("div");
 
 aiMessage.className = "message ai";
 
-aiMessage.textContent = data.reply || "No response";
+const fullReply = data.reply || "No response";
+
+aiMessage.textContent = "";
 
 const copyBtn = document.createElement("div");
 
@@ -502,6 +504,20 @@ copyBtn.onclick = () => {
 
 chatBox.appendChild(aiMessage);
 chatBox.appendChild(copyBtn);
+
+let i = 0;
+
+const typingEffect = setInterval(() => {
+
+    aiMessage.textContent += fullReply.charAt(i);
+
+    i++;
+
+    if (i >= fullReply.length) {
+        clearInterval(typingEffect);
+    }
+
+}, 15);
 
 const userTop = userMessage.offsetTop;
 
