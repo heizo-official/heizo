@@ -453,7 +453,7 @@ headers: {
 },
 body: JSON.stringify({
 message: userText,
-history: chatHistory
+history: chatHistory.slice(-100)
 })
 });
 
