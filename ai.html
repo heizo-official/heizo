@@ -503,12 +503,6 @@ copyBtn.onclick = () => {
 chatBox.appendChild(aiMessage);
 chatBox.appendChild(copyBtn);
 
-setTimeout(() => {
-    aiMessage.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest"
-    });
-}, 50);
 
 chatHistory.push({
     type: "ai",
