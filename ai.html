@@ -59,7 +59,13 @@ text-align:center;
 }
 
 .container{
-padding:90px 20px 20px 20px;
+    min-height:calc(100vh - 90px);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    transform:translateY(-60px);
 }
 
 .logo{
