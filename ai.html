@@ -277,7 +277,7 @@ cursor:pointer;
 
 <div class="container">
 <img src="logo.png" class="logo" alt="HEIZO Logo">
-<h1>PRUEBA 123456</h1>
+<h1>HEIZO AI</h1>
 
 <div class="chat-box">
 
@@ -302,47 +302,22 @@ Send
 
 </div>
 
-<script type="text/javascript">
-throw new Error("PRUEBA");
+<script>
 
-console.log("PRUEBA");
-
-alert("INICIO");
-
-let observer;
-
-if ("IntersectionObserver" in window) {
-
-observer = new IntersectionObserver((entries) => {
-
-entries.forEach(entry => {
-
-if (entry.isIntersecting) {
-
+const observer = new IntersectionObserver((entries)=>{
+entries.forEach(entry=>{
+if(entry.isIntersecting){
 entry.target.classList.add("show");
-
 }
-
+});
 });
 
-});
-
-document.querySelectorAll(".fade-up").forEach(el => {
-
+document.querySelectorAll(".fade-up").forEach(el=>{
 observer.observe(el);
-
 });
-
-                 }
-
-console.log(observer);
-
 const input = document.querySelector("input");
 const button = document.querySelector("button");
 const chatBox = document.querySelector(".chat-box");
-
-alert("SCRIPT CARGADO");
-
 input.addEventListener("keypress", (event) => {
 
     if(event.key === "Enter"){
@@ -555,8 +530,6 @@ chatBox.appendChild(copyBtn);
 
     const chunk = decoder.decode(value);
 
-    console.log("CHUNK:", chunk);
-
     const lines = chunk.split("\n");
 
     for (const line of lines) {
@@ -580,9 +553,7 @@ chatBox.appendChild(copyBtn);
 
             chatBox.scrollTop = chatBox.scrollHeight;
 
-        catch (e) {
-    console.error("ERROR SSE:", e);
-        }
+        } catch (e) {}
 
     }
 
@@ -638,5 +609,4 @@ chatBox.scrollTop = chatBox.scrollHeight;
 </script>
 </body>
 </html>
-
 
