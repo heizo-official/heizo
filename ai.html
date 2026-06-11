@@ -442,6 +442,22 @@ console.log("Script sigue funcionando");
 console.log("Supabase conectado");
 console.log(supabase);
 
+document.getElementById("google-login-btn")
+.addEventListener("click", async () => {
+
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: "https://heizo.xyz/ai.html"
+    }
+  });
+
+  if (error) {
+    alert(error.message);
+  }
+
+});
+
 document.body.innerHTML += `
 <div style="
 position:fixed;
