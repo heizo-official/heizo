@@ -474,7 +474,9 @@ if (!response.ok) {
 
 const reader = response.body.getReader();
 const decoder = new TextDecoder();
+
 let fullReply = "";
+let buffer = "";
 
 console.log("Respuesta recibida");
 
@@ -524,23 +526,25 @@ chatBox.appendChild(copyBtn);
 
     while (true) {
 
-    const { done, value } = await reader.read();
+const { done, value } = await reader.read();
 
-    if (done) break;
+if (done) break;
 
-    const chunk = decoder.decode(value);
+buffer += decoder.decode(value, { stream: true });
 
-    const lines = chunk.split("\n");
+const lines = buffer.split("\n");
 
-    for (const line of lines) {
+buffer = lines.pop() || "";
 
-        if (!line.startsWith("data: ")) continue;
+for (const line of lines) {
 
-        const data = line.replace("data: ", "").trim();
+if (!line.startsWith("data: ")) continue;
 
-        if (data === "[DONE]") continue;
+const data = line.slice(6).trim();
 
-        try {
+if (data === "[DONE]") continue;
+
+try {
 
             const json = JSON.parse(data);
 
