@@ -311,7 +311,14 @@ const SUPABASE_URL = "https://ioutmijkalkskuufnbof.supabase.co";
 
 const SUPABASE_KEY = "sb_publishable_l-1rly5RjpMmY-wTX61zrQ_n3NoopA8";
 
-console.log("Supabase cargado:", window.supabase);
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+console.log("Cliente Supabase creado");
+console.log(window.supabase);
+console.log(SUPABASE_URL);
 
 const observer = new IntersectionObserver((entries)=>{
 entries.forEach(entry=>{
