@@ -399,7 +399,7 @@ console.log("window.supabase =", window.supabase);
 
 </div>
 
-<div id="chat-screen" style="display:none;">
+<div id="chat-screen" style="display:block;">
 
 <img src="logo.png" class="logo" alt="HEIZO Logo">
 
@@ -427,30 +427,6 @@ Send
 </button>
 
 </div>
-
-<script>
-const SUPABASE_URL = "https://ioutmijkalkskuufnbof.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_l-1rly5RjpMmY-wTX61zrQ_n3NoopA8";
-
-// const supabase = window.supabase.createClient(
-//   SUPABASE_URL,
-//   SUPABASE_ANON_KEY
-// );
-
-document.body.innerHTML += `
-<div style="
-position:fixed;
-top:10px;
-right:10px;
-background:green;
-color:white;
-padding:10px;
-z-index:999999;
-">
-SUPABASE OK
-</div>`;
-
-</script>
 
 <script>
 
