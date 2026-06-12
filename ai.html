@@ -526,7 +526,20 @@ observer.observe(el);
 const input = document.querySelector("input");
 const button = document.getElementById("send-btn");
 const chatBox = document.querySelector(".chat-box");
-input.addEventListener("keypress", (event) => {
+
+    const accountBtn = document.getElementById("account-btn");
+const accountMenu = document.getElementById("account-menu");
+
+accountMenu.style.display = "none";
+
+accountBtn.addEventListener("click", () => {
+    accountMenu.style.display =
+        accountMenu.style.display === "none"
+        ? "block"
+        : "none";
+});
+    
+    input.addEventListener("keypress", (event) => {
 
     if(event.key === "Enter"){
     event.preventDefault();
