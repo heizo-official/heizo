@@ -399,7 +399,7 @@ console.log("window.supabase =", window.supabase);
 
 </div>
 
-<div id="chat-screen" style="display:block;">
+<div id="chat-screen" style="display:none;">
 
 <img src="logo.png" class="logo" alt="HEIZO Logo">
 
@@ -782,6 +782,28 @@ if (googleBtn) {
   );
 
 }
+
+const loginScreen =
+document.getElementById("login-screen");
+
+const chatScreen =
+document.getElementById("chat-screen");
+
+supabaseClient.auth.getUser().then(({ data }) => {
+
+    if (data.user) {
+
+        loginScreen.style.display = "none";
+        chatScreen.style.display = "block";
+
+    } else {
+
+        loginScreen.style.display = "block";
+        chatScreen.style.display = "none";
+
+    }
+
+});
 
 </script>
 </body>
