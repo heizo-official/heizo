@@ -783,6 +783,17 @@ if (googleBtn) {
 
 }
 
+supabaseClient.auth.getUser().then(({ data }) => {
+    console.log("USER:", data.user);
+
+    if (data.user) {
+        alert(
+            "Conectado como: " +
+            data.user.email
+        );
+    }
+});
+
 </script>
 </body>
 </html>
