@@ -734,6 +734,55 @@ input.value = "";
 chatBox.scrollTop = chatBox.scrollHeight;
 
 });
+
+// ===== SUPABASE LOGIN =====
+
+const SUPABASE_URL =
+"https://ioutmijkalkskuufnbof.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_l-1rly5RjpMmY-wTX61zrQ_n3NoopA8";
+
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+const googleBtn =
+document.getElementById("google-login-btn");
+
+if (googleBtn) {
+
+  googleBtn.addEventListener(
+    "click",
+    async () => {
+
+      try {
+
+        await supabaseClient.auth.signInWithOAuth({
+          provider: "google",
+          options: {
+            redirectTo:
+              window.location.origin +
+              window.location.pathname
+          }
+        });
+
+      } catch (err) {
+
+        console.error(
+          "Google Login Error:",
+          err
+        );
+
+      }
+
+    }
+  );
+
+}
+
 </script>
 </body>
 </html>
