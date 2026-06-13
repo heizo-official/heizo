@@ -1094,6 +1094,90 @@ supabaseClient.auth.getUser().then(({ data }) => {
 
 });
 
+async function loadAccountData() {
+
+    const { data, error } = await supabase.auth.getUser();
+
+    if (error || !data.user) return;
+
+    const user = data.user;
+
+    const fullName =
+        user.user_metadata?.full_name ||
+        user.user_metadata?.name ||
+        "User";
+
+    const email =
+        user.email ||
+        "";
+
+    const avatarLetters = fullName
+        .split(" ")
+        .map(word => word[0])
+        .slice(0,2)
+        .join("")
+        .toUpperCase();
+
+    document.getElementById("account-name").textContent = fullName;
+    document.getElementById("account-email").textContent = email;
+
+    const avatar = document.querySelector(".account-avatar");
+
+    if (avatar) {
+        avatar.textContent = avatarLetters;
+    }
+
+    const currentPlan = "Standard";
+
+    document.getElementById("account-plan").textContent = currentPlan;
+
+    const upgradeBtn =
+        document.getElementById("upgrade-plan-btn");
+
+    if (currentPlan === "Free") {
+
+        upgradeBtn.textContent =
+            "Upgrade to Standard";
+
+    } else if (currentPlan === "Standard") {
+
+        upgradeBtn.textContent =
+            "Upgrade to Premium";
+
+    } else if (currentPlan === "Premium") {
+
+        upgradeBtn.textContent =
+            "Upgrade to Pro";
+
+    } else {
+
+        upgradeBtn.textContent =
+            "Current Plan: Pro";
+
+        upgradeBtn.disabled = true;
+    }
+}
+
+loadAccountData();
+
+document
+.getElementById("account-btn")
+.addEventListener("click", () => {
+
+    document.getElementById(
+        "account-screen"
+    ).style.display = "block";
+});
+
+document
+.getElementById("account-back-btn")
+.addEventListener("click", () => {
+
+    document.getElementById(
+        "account-screen"
+    ).style.display = "none";
+});
+
 </script>
 </body>
 </html>
