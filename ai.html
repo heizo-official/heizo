@@ -641,7 +641,8 @@ console.log("window.supabase =", window.supabase);
 
 <div id="account-menu" style="display:none;">
 
-    <div>
+    <div id="account-menu-item">
+        
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2080ff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:12px;">
             <path d="M12 2L13.8 8.2L20 10L13.8 11.8L12 18L10.2 11.8L4 10L10.2 8.2L12 2Z"/>
         </svg>
@@ -1169,6 +1170,19 @@ document
     document.getElementById(
         "account-screen"
     ).style.display = "none";
+});
+
+document
+.getElementById("account-menu-item")
+.addEventListener("click", () => {
+
+    document.getElementById(
+        "account-menu"
+    ).style.display = "none";
+
+    document.getElementById(
+        "account-screen"
+    ).style.display = "block";
 });
 
 </script>
