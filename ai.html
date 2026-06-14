@@ -1284,6 +1284,29 @@ document
     document.body.style.overflow = "hidden";
 });
 
+document
+.getElementById("logout-btn")
+.addEventListener("click", async () => {
+
+    try {
+
+        await supabaseClient.auth.signOut();
+
+        document.getElementById("account-menu").style.display = "none";
+        document.getElementById("account-screen").style.display = "none";
+
+        document.body.style.overflow = "auto";
+
+        location.reload();
+
+    } catch (error) {
+
+        console.error("Logout Error:", error);
+
+    }
+
+});
+
 </script>
 </body>
 </html>
