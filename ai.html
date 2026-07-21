@@ -1180,6 +1180,8 @@ supabaseClient.auth.getUser().then(({ data }) => {
         loginScreen.style.display = "none";
         chatScreen.style.display = "block";
 
+        loadAccountData();
+
     } else {
 
         loginScreen.style.display = "block";
@@ -1191,7 +1193,8 @@ supabaseClient.auth.getUser().then(({ data }) => {
 
 async function loadAccountData() {
 
-    const { data, error } = await supabase.auth.getUser();
+    const { data, error } =
+await supabaseClient.auth.getUser();
 
     if (error || !data.user) return;
 
@@ -1277,7 +1280,6 @@ if (avatar) {
     }
 }
 
-loadAccountData();
 
 
 
