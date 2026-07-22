@@ -1139,6 +1139,47 @@ accountBtn.addEventListener("click", () => {
         ? "block"
         : "none";
 });
+
+
+    // ===== SIDEBAR =====
+
+const menuBtn =
+document.getElementById("menu-btn");
+
+const sidebar =
+document.getElementById("sidebar");
+
+const sidebarOverlay =
+document.getElementById("sidebar-overlay");
+
+function openSidebar(){
+
+    sidebar.classList.add("open");
+
+    sidebarOverlay.classList.add("show");
+
+    menuBtn.style.display = "none";
+
+    document.body.style.overflow = "hidden";
+
+}
+
+function closeSidebar(){
+
+    sidebar.classList.remove("open");
+
+    sidebarOverlay.classList.remove("show");
+
+    menuBtn.style.display = "flex";
+
+    document.body.style.overflow = "auto";
+
+}
+
+menuBtn.addEventListener("click", openSidebar);
+
+sidebarOverlay.addEventListener("click", closeSidebar);
+    
     
     input.addEventListener("keypress", (event) => {
 
