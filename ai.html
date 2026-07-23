@@ -1187,6 +1187,12 @@ sidebarOverlay.addEventListener("click", closeSidebar);
 
     newChatBtn.addEventListener("click", async () => {
 
+    if (chatHistory.length > 0 && currentChatId) {
+
+        await loadChats();
+
+    }
+
     closeSidebar();
 
     chatBox.innerHTML = "";
