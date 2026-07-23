@@ -1461,6 +1461,16 @@ localStorage.setItem(
     JSON.stringify(chatHistory)
 );
 
+
+await supabaseClient
+    .from("chats")
+    .update({
+        messages: chatHistory,
+        updated_at: new Date().toISOString()
+    })
+    .eq("id", currentChatId);
+
+
 isGenerating = false;
 button.disabled = false;
 
