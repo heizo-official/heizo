@@ -1795,6 +1795,27 @@ data.forEach(chat => {
     }
 
 
+async function saveMessage(role, content) {
+
+    if (!currentChatId) return;
+
+    const { error } = await supabaseClient
+        .from("messages")
+        .insert({
+            chat_id: currentChatId,
+            role: role,
+            content: content
+        });
+
+    if (error) {
+
+        console.error("Error guardando mensaje:", error);
+
+    }
+
+}
+
+
 document
 .getElementById("account-back-btn")
 .addEventListener("click", () => {
