@@ -1200,6 +1200,13 @@ function resetInputHeight() {
 }
 
 input.addEventListener("input", resetInputHeight);
+
+input.addEventListener("focus", () => {
+    setTimeout(() => {
+        window.scrollTo(0, 0);
+    }, 50);
+});
+    
     
 
     const accountBtn = document.getElementById("account-btn");
