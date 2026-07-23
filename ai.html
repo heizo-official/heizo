@@ -1758,38 +1758,60 @@ data.forEach(chat => {
 
     item.onclick = async () => {
 
-        currentChatId = chat.id;
+    currentChatId = chat.id;
 
-        chatHistory = chat.messages || [];
+    const { data: messages, error } = await supabaseClient
+        .from("messages")
+        .select("*")
+        .eq("chat_id", chat.id)
+        .order("created_at", { ascending: true });
 
-        chatBox.innerHTML = "";
+    if (error) {
 
-        chatHistory.forEach(msg => {
+        console.error(error);
+        return;
 
-            const div = document.createElement("div");
+    }
 
-            div.className =
-                msg.type === "ai"
-                ? "message ai"
-                : "message";
+    chatHistory = [];
 
-            if (msg.type === "user") {
+    chatBox.innerHTML = "";
 
-                div.style.background = "#ffffff";
-                div.style.marginLeft = "auto";
-                div.style.border = "1px solid #d8dde5";
-                div.style.borderRadius = "18px";
-                div.style.marginRight = "12px";
+    messages.forEach(msg => {
 
-            }
+        const historyItem = {
+            type: msg.role === "assistant" ? "ai" : "user",
+            text: msg.content
+        };
 
-            div.textContent = msg.text;
+        chatHistory.push(historyItem);
 
-            chatBox.appendChild(div);
+        const div = document.createElement("div");
 
-        });
+        div.className =
+            historyItem.type === "ai"
+            ? "message ai"
+            : "message";
 
-    };
+        if (historyItem.type === "user") {
+
+            div.style.background = "#ffffff";
+            div.style.marginLeft = "auto";
+            div.style.border = "1px solid #d8dde5";
+            div.style.borderRadius = "18px";
+            div.style.marginRight = "12px";
+
+        }
+
+        div.textContent = historyItem.text;
+
+        chatBox.appendChild(div);
+
+    });
+
+    closeSidebar();
+
+};
 
     recentChats.appendChild(item);
 
