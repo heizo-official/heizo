@@ -1271,6 +1271,16 @@ button.addEventListener("click", async () => {
 if(input.value.trim() === "") return;
 if(isGenerating) return;
 
+
+if (!currentChatId) {
+
+    const title = input.value.trim().substring(0, 40);
+
+    await createChat(title);
+
+}
+
+
 isGenerating = true;
 
 button.disabled = true;
