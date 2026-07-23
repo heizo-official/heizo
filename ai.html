@@ -1337,10 +1337,6 @@ chatHistory.push({
     text: userText
 });
 
-localStorage.setItem(
-    "heizoChat",
-    JSON.stringify(chatHistory)
-);
 
 await saveMessage("user", userText);
 
@@ -1486,10 +1482,6 @@ chatHistory.push({
     text: fullReply
 });
 
-localStorage.setItem(
-    "heizoChat",
-    JSON.stringify(chatHistory)
-);
 
 await saveMessage("assistant", fullReply);
 
