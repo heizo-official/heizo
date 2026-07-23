@@ -1674,7 +1674,7 @@ async function createChat(title = "New Chat") {
     const { data, error } = await supabaseClient
         .from("chats")
         .insert({
-            user_id: currentUserId,
+            user_id: currentUser.id,
             title: title
         })
         .select()
@@ -1701,7 +1701,7 @@ async function createChat(title = "New Chat") {
     const { data, error } = await supabaseClient
         .from("chats")
         .select("*")
-        .eq("user_id", currentUserId)
+        .eq("user_id", currentUser.id)
         .order("updated_at", { ascending: false });
 
     if (error) {
