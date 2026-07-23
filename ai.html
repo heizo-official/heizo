@@ -1696,6 +1696,26 @@ async function createChat(title = "New Chat") {
                }
 
 
+    async function loadChats() {
+
+    const { data, error } = await supabaseClient
+        .from("chats")
+        .select("*")
+        .eq("user_id", currentUserId)
+        .order("updated_at", { ascending: false });
+
+    if (error) {
+
+        console.error(error);
+        return;
+
+    }
+
+    console.log("Chats:", data);
+
+    }
+
+
 document
 .getElementById("account-back-btn")
 .addEventListener("click", () => {
