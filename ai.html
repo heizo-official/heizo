@@ -1183,6 +1183,23 @@ function closeSidebar(){
 menuBtn.addEventListener("click", openSidebar);
 
 sidebarOverlay.addEventListener("click", closeSidebar);
+
+
+    newChatBtn.addEventListener("click", async () => {
+
+    closeSidebar();
+
+    chatBox.innerHTML = "";
+
+    chatHistory = [];
+
+    currentChatId = null;
+
+    input.value = "";
+
+    input.focus();
+
+});
     
     
     input.addEventListener("keypress", (event) => {
