@@ -1534,16 +1534,20 @@ document.getElementById("login-screen");
 const chatScreen =
 document.getElementById("chat-screen");
 
-supabaseClient.auth.getUser().then(({ data }) => {
+supabaseClient.auth.getUser().then(async ({ data }) => {
 
     if (data.user) {
+
+        currentUserId = data.user.id;
 
         loginScreen.style.display = "none";
         chatScreen.style.display = "block";
 
-        loadAccountData();
+        await loadAccountData();
 
     } else {
+
+        currentUserId = null;
 
         loginScreen.style.display = "block";
         chatScreen.style.display = "none";
