@@ -1489,6 +1489,8 @@ localStorage.setItem(
 );
 
 
+
+/*
 await supabaseClient
     .from("chats")
     .update({
@@ -1496,6 +1498,7 @@ await supabaseClient
         updated_at: new Date().toISOString()
     })
     .eq("id", currentChatId);
+    */
 
 
 isGenerating = false;
