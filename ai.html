@@ -1856,14 +1856,26 @@ data.forEach(chat => {
 
 };
 
-    recentChats.appendChild(item);
+        recentChats.appendChild(item);
 
 });
+
+    // Cargar automáticamente el chat más reciente si existe y no hay chat activo
+    if (data && data.length > 0 && !currentChatId) {
+
+        if (recentChats.children[0]) {
+
+            recentChats.children[0].click();
+
+        }
+
+    }
 
     }
 
 
 async function saveMessage(role, content) {
+    
 
     if (!currentChatId) return;
 
