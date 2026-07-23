@@ -1538,16 +1538,18 @@ supabaseClient.auth.getUser().then(async ({ data }) => {
 
     if (data.user) {
 
-        currentUserId = data.user.id;
+        currentUser = data.user;
 
         loginScreen.style.display = "none";
         chatScreen.style.display = "block";
 
         await loadAccountData();
 
+        await loadChats();
+
     } else {
 
-        currentUserId = null;
+        currentUser = null;
 
         loginScreen.style.display = "block";
         chatScreen.style.display = "none";
