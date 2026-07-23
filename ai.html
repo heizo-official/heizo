@@ -1399,8 +1399,10 @@ userMessage.style.marginRight = "12px";
 const userText = input.value;
 userMessage.textContent = userText;
 input.value = "";
+resetInputHeight();
 
 chatBox.appendChild(userMessage);
+    
 
 userMessage.scrollIntoView({
     behavior: "instant",
