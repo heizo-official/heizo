@@ -1940,7 +1940,6 @@ data.forEach(chat => {
 
 
 async function saveMessage(role, content) {
-    
 
     if (!currentChatId) return;
 
@@ -1956,9 +1955,23 @@ async function saveMessage(role, content) {
 
         console.error("Error guardando mensaje:", error);
 
+        return;
+
     }
 
+    // Actualiza la fecha del chat para que pase a ser el más reciente
+    await supabaseClient
+        .from("chats")
+        .update({
+            updated_at: new Date().toISOString()
+        })
+        .eq("id", currentChatId);
+
+    // Reorganiza la lista del menú en tiempo real
+    await loadChats();
+
 }
+    
 
 
 document
