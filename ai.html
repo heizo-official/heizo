@@ -1649,6 +1649,32 @@ if (avatar) {
 
 
 
+async function createChat(title = "New Chat") {
+
+    const { data, error } = await supabaseClient
+        .from("chats")
+        .insert({
+            user_id: currentUserId,
+            title: title
+        })
+        .select()
+        .single();
+
+    if (error) {
+
+        console.error(error);
+        return null;
+
+    }
+
+    currentChatId = data.id;
+
+    chatHistory = [];
+
+    return data;
+
+               }
+
 
 document
 .getElementById("account-back-btn")
