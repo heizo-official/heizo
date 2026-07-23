@@ -657,24 +657,22 @@ padding-right:2px;
     box-shadow:
         8px 0 40px rgba(0,0,0,.10);
 
-    overflow-y:auto;
-    
-    overflow-x:hidden;
+    overflow:hidden;
 
     box-sizing:border-box;
-
-    padding:24px 18px 90px;
 
 }
 
 
 #sidebar-content{
 
+    height:100%;
+
     overflow-y:auto;
 
-    height:calc(100vh - 190px);
+    padding:24px 18px 90px;
 
-    padding-bottom:30px;
+    box-sizing:border-box;
 
 }
 
@@ -1003,6 +1001,8 @@ console.log("window.supabase =", window.supabase);
 
 <div id="sidebar">
 
+    <div id="sidebar-scroll">
+
     <div id="sidebar-header">
 
         <div id="sidebar-title">
@@ -1057,6 +1057,7 @@ console.log("window.supabase =", window.supabase);
 
 </div>
 
+ </div>
 
 <button id="new-chat-btn">
 
