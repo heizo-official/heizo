@@ -1189,9 +1189,18 @@ entry.target.classList.add("show");
 document.querySelectorAll(".fade-up").forEach(el=>{
 observer.observe(el);
 });
-const input = document.querySelector("input");
+const input = document.querySelector("textarea");
 const button = document.getElementById("send-btn");
 const chatBox = document.querySelector(".chat-box");
+
+function resetInputHeight() {
+    input.style.height = "50px";
+    const newHeight = Math.min(input.scrollHeight, 180);
+    input.style.height = newHeight + "px";
+}
+
+input.addEventListener("input", resetInputHeight);
+    
 
     const accountBtn = document.getElementById("account-btn");
 const accountMenu = document.getElementById("account-menu");
