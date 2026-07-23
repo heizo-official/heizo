@@ -1189,7 +1189,13 @@ sidebarOverlay.addEventListener("click", closeSidebar);
     }
 
 });
-let chatHistory = JSON.parse(localStorage.getItem("heizoChat")) || [];
+
+
+let chatHistory = [];
+
+let currentChatId = null;
+
+let currentUserId = null;
 
 chatHistory.forEach(msg => {
 
