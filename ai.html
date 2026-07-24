@@ -2057,39 +2057,45 @@ data.forEach(chat => {
     }
 
 // Acciones del menú contextual (Renombrar y Borrar)
-document.getElementById("ctx-rename").onclick = async () => {
+document.getElementById("ctx-rename").onclick = async (e) => {
+    e.stopPropagation(); // Evita que el toque se pierda antes de abrir la alerta
+    const chatToRename = selectedChatForCtx;
     hideContextMenu();
-    if (!selectedChatForCtx) return;
 
-    const newTitle = prompt("Nuevo nombre para el chat:", selectedChatForCtx.title || "New Chat");
+    if (!chatToRename) return;
+
+    const newTitle = prompt("Nuevo nombre para el chat:", chatToRename.title || "New Chat");
     if (newTitle && newTitle.trim() !== "") {
         await supabaseClient
             .from("chats")
             .update({ title: newTitle.trim() })
-            .eq("id", selectedChatForCtx.id);
+            .eq("id", chatToRename.id);
 
         await loadChats();
     }
 };
 
-document.getElementById("ctx-delete").onclick = async () => {
+document.getElementById("ctx-delete").onclick = async (e) => {
+    e.stopPropagation(); // Evita que el toque se pierda antes de abrir la confirmación
+    const chatToDelete = selectedChatForCtx;
     hideContextMenu();
-    if (!selectedChatForCtx) return;
+
+    if (!chatToDelete) return;
 
     if (confirm("¿Estás seguro de que deseas eliminar este chat?")) {
         // Borrar mensajes asociados
         await supabaseClient
             .from("messages")
             .delete()
-            .eq("chat_id", selectedChatForCtx.id);
+            .eq("chat_id", chatToDelete.id);
 
         // Borrar el chat
         await supabaseClient
             .from("chats")
             .delete()
-            .eq("id", selectedChatForCtx.id);
+            .eq("id", chatToDelete.id);
 
-        if (currentChatId === selectedChatForCtx.id) {
+        if (currentChatId === chatToDelete.id) {
             currentChatId = null;
             chatBox.innerHTML = "";
             chatHistory = [];
@@ -2098,6 +2104,7 @@ document.getElementById("ctx-delete").onclick = async () => {
         await loadChats();
     }
 };
+    
 
 
 async function saveMessage(role, content) {
