@@ -2355,10 +2355,11 @@ document.addEventListener("pointerdown", (e) => {
 
 async function loadChats() {
 
-    const { data, error } = await supabaseClient
+        const { data, error } = await supabaseClient
         .from("chats")
         .select("*")
         .eq("user_id", currentUser.id)
+        .neq("title", "__IMAGES_WORKSPACE__")
         .order("updated_at", { ascending: false });
 
     if (error) {
