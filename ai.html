@@ -1859,6 +1859,23 @@ async function createChat(title = "New Chat") {
                }
 
 
+// ===== VARIABLES GLOBALES DEL MENÚ =====
+let selectedChatForCtx = null;
+const ctxMenu = document.getElementById("chat-context-menu");
+
+function hideContextMenu() {
+    if (ctxMenu) ctxMenu.style.display = "none";
+}
+
+// Ocultar menú si se toca fuera
+document.addEventListener("pointerdown", (e) => {
+    if (ctxMenu && !ctxMenu.contains(e.target)) {
+        hideContextMenu();
+    }
+});
+    
+
+    
     async function loadChats() {
 
     const { data, error } = await supabaseClient
