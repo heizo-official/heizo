@@ -903,6 +903,41 @@ padding-right:2px;
 
 }
 
+/* ===== MENÚ CONTEXTUAL CHATS ===== */
+#chat-context-menu{
+    position:fixed;
+    background:#ffffff;
+    border-radius:18px;
+    box-shadow:0 12px 35px rgba(0,0,0,0.18);
+    z-index:999999;
+    overflow:hidden;
+    min-width:190px;
+    border:1px solid #eef2f7;
+    padding:6px;
+}
+
+.ctx-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 14px;
+    font-size:15px;
+    font-weight:500;
+    color:#111827;
+    border-radius:12px;
+    cursor:pointer;
+    transition:background 0.15s ease;
+    user-select:none;
+}
+
+.ctx-item:hover{
+    background:#f5f7fb;
+}
+
+.ctx-item.delete{
+    color:#ef4444;
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
