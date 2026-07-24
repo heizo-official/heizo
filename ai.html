@@ -2645,6 +2645,335 @@ if (deleteBtn) {
     }
     
 
+// ===== ESTADO Y LÓGICA DE IMÁGENES Y ADJUNTOS =====
+let isImagesMode = false;
+let imagesChatId = null;
+let selectedImageBase64 = null;
+
+const imagesSearchBtn = document.getElementById("images-search-btn");
+const imagesSearchBar = document.getElementById("images-search-bar");
+const imagesSearchInput = document.getElementById("images-search-input");
+
+const imageSuggestions = document.getElementById("image-suggestions");
+const chipCreate = document.getElementById("chip-create");
+const chipEdit = document.getElementById("chip-edit");
+
+const attachPlusBtn = document.getElementById("attach-plus-btn");
+const attachMenuOverlay = document.getElementById("attach-menu-overlay");
+const attachMenuSheet = document.getElementById("attach-menu-sheet");
+
+const optPhotos = document.getElementById("opt-photos");
+const optCamera = document.getElementById("opt-camera");
+const optFiles = document.getElementById("opt-files");
+
+const inputGallery = document.getElementById("input-gallery");
+const inputCamera = document.getElementById("input-camera");
+const inputFiles = document.getElementById("input-files");
+
+const imagePreviewContainer = document.getElementById("image-preview-container");
+const imagePreview = document.getElementById("image-preview");
+const removePreviewBtn = document.getElementById("remove-preview-btn");
+
+// 1. Activar / Desactivar Modo Images al hacer clic en el menú lateral
+const imagesNavBtn = document.getElementById("images-btn");
+if (imagesNavBtn) {
+    imagesNavBtn.addEventListener("click", async () => {
+        closeSidebar();
+        isImagesMode = true;
+
+        if (imagesSearchBtn) imagesSearchBtn.style.display = "flex";
+        if (imageSuggestions) imageSuggestions.style.display = "flex";
+
+        await loadOrCreateImagesChat();
+    });
+}
+
+// Desactivar modo Images al ir a New Chat o seleccionar un chat reciente
+newChatBtn.addEventListener("click", () => {
+    isImagesMode = false;
+    if (imagesSearchBtn) imagesSearchBtn.style.display = "none";
+    if (imagesSearchBar) imagesSearchBar.style.display = "none";
+    if (imageSuggestions) imageSuggestions.style.display = "none";
+    clearAttachedImage();
+});
+
+// 2. Control de Lupa de Búsqueda de la Sección Images
+if (imagesSearchBtn) {
+    imagesSearchBtn.onclick = () => {
+        const isVisible = imagesSearchBar.style.display === "flex";
+        imagesSearchBar.style.display = isVisible ? "none" : "flex";
+        if (!isVisible && imagesSearchInput) imagesSearchInput.focus();
+    };
+}
+
+if (imagesSearchInput) {
+    imagesSearchInput.addEventListener("input", (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        const cards = document.querySelectorAll(".image-card-container");
+
+        cards.forEach(card => {
+            const titleText = card.querySelector(".image-card-title").textContent.toLowerCase();
+            if (titleText.includes(query)) {
+                card.closest(".message").style.display = "block";
+            } else {
+                card.closest(".message").style.display = "none";
+            }
+        });
+    });
+}
+
+// 3. Sugerencias Apiladas
+if (chipCreate) {
+    chipCreate.onclick = () => {
+        input.placeholder = "Describe la imagen que deseas crear...";
+        input.focus();
+    };
+}
+
+if (chipEdit) {
+    chipEdit.onclick = () => {
+        input.placeholder = "Describe cómo deseas editar la foto...";
+        if (inputGallery) inputGallery.click();
+    };
+}
+
+// 4. CONTROL DEL MENÚ INFERIOR (+), TOQUE FUERA, DESLIZAR Y BOTÓN ATRÁS MÓVIL
+let isSheetOpen = false;
+
+function openAttachMenu() {
+    isSheetOpen = true;
+    if (attachMenuOverlay) attachMenuOverlay.classList.add("show");
+    history.pushState({ attachSheetOpen: true }, "");
+}
+
+function closeAttachMenu() {
+    if (!isSheetOpen) return;
+    isSheetOpen = false;
+    if (attachMenuOverlay) attachMenuOverlay.classList.remove("show");
+    if (attachMenuSheet) attachMenuSheet.style.transform = "";
+}
+
+window.addEventListener("popstate", () => {
+    if (isSheetOpen) {
+        closeAttachMenu();
+    }
+});
+
+if (attachPlusBtn) {
+    attachPlusBtn.onclick = (e) => {
+        e.stopPropagation();
+        openAttachMenu();
+    };
+}
+
+if (attachMenuOverlay) {
+    attachMenuOverlay.onclick = (e) => {
+        if (e.target === attachMenuOverlay) {
+            closeAttachMenu();
+        }
+    };
+}
+
+// Gesto de Arrastrar / Deslizar hacia abajo (Swipe down) para cerrar estilo ChatGPT
+let startY = 0;
+let currentY = 0;
+
+if (attachMenuSheet) {
+    attachMenuSheet.addEventListener("touchstart", (e) => {
+        startY = e.touches[0].clientY;
+        attachMenuSheet.style.transition = "none";
+    }, { passive: true });
+
+    attachMenuSheet.addEventListener("touchmove", (e) => {
+        currentY = e.touches[0].clientY;
+        const deltaY = currentY - startY;
+
+        if (deltaY > 0) {
+            attachMenuSheet.style.transform = `translateY(${deltaY}px)`;
+        }
+    }, { passive: true });
+
+    attachMenuSheet.addEventListener("touchend", () => {
+        attachMenuSheet.style.transition = "transform 0.28s cubic-bezier(0.16, 1, 0.3, 1)";
+        const deltaY = currentY - startY;
+
+        if (deltaY > 80) {
+            closeAttachMenu();
+        } else {
+            attachMenuSheet.style.transform = "translateY(0)";
+        }
+        startY = 0;
+        currentY = 0;
+    });
+}
+
+// 5. Opciones del Menú (Fotos, Cámara, Archivos)
+if (optPhotos) {
+    optPhotos.onclick = () => {
+        closeAttachMenu();
+        if (inputGallery) inputGallery.click();
+    };
+}
+
+if (optCamera) {
+    optCamera.onclick = () => {
+        closeAttachMenu();
+        if (inputCamera) inputCamera.click();
+    };
+}
+
+if (optFiles) {
+    optFiles.onclick = () => {
+        closeAttachMenu();
+        if (inputFiles) inputFiles.click();
+    };
+}
+
+// Manejo de Archivos Seleccionados y Previsualización
+function handleFileSelect(file) {
+    if (!file) return;
+
+    if (file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            selectedImageBase64 = e.target.result;
+            if (imagePreview) imagePreview.src = selectedImageBase64;
+            if (imagePreviewContainer) imagePreviewContainer.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+    } else {
+        alert(`Archivo seleccionado: ${file.name}`);
+    }
+}
+
+if (inputGallery) inputGallery.addEventListener("change", (e) => handleFileSelect(e.target.files[0]));
+if (inputCamera) inputCamera.addEventListener("change", (e) => handleFileSelect(e.target.files[0]));
+if (inputFiles) inputFiles.addEventListener("change", (e) => handleFileSelect(e.target.files[0]));
+
+if (removePreviewBtn) {
+    removePreviewBtn.onclick = clearAttachedImage;
+}
+
+function clearAttachedImage() {
+    selectedImageBase64 = null;
+    if (inputGallery) inputGallery.value = "";
+    if (inputCamera) inputCamera.value = "";
+    if (inputFiles) inputFiles.value = "";
+    if (imagePreviewContainer) imagePreviewContainer.style.display = "none";
+}
+
+// 6. Cargar o Crear el Chat Fijo de Imágenes (Persistente fuera de Recientes)
+async function loadOrCreateImagesChat() {
+    if (!currentUser) return;
+
+    const { data } = await supabaseClient
+        .from("chats")
+        .select("*")
+        .eq("user_id", currentUser.id)
+        .eq("title", "__IMAGES_WORKSPACE__")
+        .maybeSingle();
+
+    if (data) {
+        imagesChatId = data.id;
+    } else {
+        const { data: newChat } = await supabaseClient
+            .from("chats")
+            .insert({ user_id: currentUser.id, title: "__IMAGES_WORKSPACE__" })
+            .select()
+            .single();
+        imagesChatId = newChat ? newChat.id : null;
+    }
+
+    currentChatId = imagesChatId;
+    await loadImagesMessages();
+}
+
+async function loadImagesMessages() {
+    if (!currentChatId) return;
+
+    chatBox.innerHTML = "";
+    chatHistory = [];
+
+    const { data: messages } = await supabaseClient
+        .from("messages")
+        .select("*")
+        .eq("chat_id", currentChatId)
+        .order("created_at", { ascending: true });
+
+    if (messages) {
+        messages.forEach(msg => {
+            renderImageMessage(msg.role, msg.content, msg.id, msg.metadata?.title || "Sin título");
+        });
+    }
+}
+
+function renderImageMessage(role, content, messageId, titleText) {
+    const messageDiv = document.createElement("div");
+    messageDiv.className = role === "assistant" ? "message ai" : "message";
+
+    if (role === "user") {
+        messageDiv.style.background = "#ffffff";
+        messageDiv.style.marginLeft = "auto";
+        messageDiv.style.border = "1px solid #d8dde5";
+        messageDiv.style.borderRadius = "18px";
+    }
+
+    if (content.startsWith("http") || content.startsWith("data:image")) {
+        messageDiv.innerHTML = `
+            <div class="image-card-container">
+                <span class="image-card-title">${titleText}</span>
+                <img src="${content}" style="width:100%; max-width:380px; border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.08);">
+                <div class="image-actions-bar">
+                    <button class="img-btn" onclick="renameImage('${messageId}', this)">✏️ Renombrar</button>
+                    <button class="img-btn" onclick="downloadImage('${content}', '${titleText}')">⬇️ Descargar</button>
+                    <button class="img-btn delete" onclick="deleteImage('${messageId}', this)">🗑️ Eliminar</button>
+                </div>
+            </div>
+        `;
+    } else {
+        messageDiv.textContent = content;
+    }
+
+    chatBox.appendChild(messageDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// 7. Funciones de Renombrar, Descargar y Eliminar
+async function renameImage(messageId, btnElement) {
+    const cardTitle = btnElement.closest(".image-card-container").querySelector(".image-card-title");
+    const currentTitle = cardTitle.textContent;
+    const newTitle = prompt("Nuevo nombre para la imagen:", currentTitle);
+
+    if (newTitle && newTitle.trim() !== "") {
+        cardTitle.textContent = newTitle.trim();
+        await supabaseClient
+            .from("messages")
+            .update({ metadata: { title: newTitle.trim() } })
+            .eq("id", messageId);
+    }
+}
+
+function downloadImage(url, filename) {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${filename || "imagen_heizo"}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+async function deleteImage(messageId, btnElement) {
+    if (!confirm("¿Deseas eliminar esta imagen para liberar espacio?")) return;
+
+    await supabaseClient
+        .from("messages")
+        .delete()
+        .eq("id", messageId);
+
+    btnElement.closest(".message").remove();
+        }
+
+
 
 async function saveMessage(role, content) {
 
