@@ -2037,7 +2037,7 @@ data.forEach(chat => {
 
 });
 
-    // Cargar automáticamente el chat más reciente si existe y no hay chat activo
+        // Cargar automáticamente el chat más reciente si existe y no hay chat activo
     if (data && data.length > 0 && !currentChatId) {
 
         if (recentChats.children[0]) {
@@ -2049,6 +2049,49 @@ data.forEach(chat => {
     }
 
     }
+
+// Acciones del menú contextual (Renombrar y Borrar)
+document.getElementById("ctx-rename").onclick = async () => {
+    hideContextMenu();
+    if (!selectedChatForCtx) return;
+
+    const newTitle = prompt("Nuevo nombre para el chat:", selectedChatForCtx.title || "New Chat");
+    if (newTitle && newTitle.trim() !== "") {
+        await supabaseClient
+            .from("chats")
+            .update({ title: newTitle.trim() })
+            .eq("id", selectedChatForCtx.id);
+
+        await loadChats();
+    }
+};
+
+document.getElementById("ctx-delete").onclick = async () => {
+    hideContextMenu();
+    if (!selectedChatForCtx) return;
+
+    if (confirm("¿Estás seguro de que deseas eliminar este chat?")) {
+        // Borrar mensajes asociados
+        await supabaseClient
+            .from("messages")
+            .delete()
+            .eq("chat_id", selectedChatForCtx.id);
+
+        // Borrar el chat
+        await supabaseClient
+            .from("chats")
+            .delete()
+            .eq("id", selectedChatForCtx.id);
+
+        if (currentChatId === selectedChatForCtx.id) {
+            currentChatId = null;
+            chatBox.innerHTML = "";
+            chatHistory = [];
+        }
+
+        await loadChats();
+    }
+};
 
 
 async function saveMessage(role, content) {
