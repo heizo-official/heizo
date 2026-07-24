@@ -1989,10 +1989,8 @@ document.addEventListener("pointerdown", (e) => {
         hideContextMenu();
     }
 });
-    
 
-    
-    async function loadChats() {
+async function loadChats() {
 
     const { data, error } = await supabaseClient
         .from("chats")
@@ -2001,178 +1999,158 @@ document.addEventListener("pointerdown", (e) => {
         .order("updated_at", { ascending: false });
 
     if (error) {
-
         console.error(error);
         return;
-
     }
 
     const recentChats = document.getElementById("recent-chats");
+    recentChats.innerHTML = "";
 
-recentChats.innerHTML = "";
+    data.forEach(chat => {
 
+        const item = document.createElement("div");
+        item.className = "recent-chat";
+        item.textContent = chat.title || "New Chat";
 
+        // Variables para detectar la pulsación larga (Long Press)
+        let pressTimer = null;
+        let isLongPress = false;
 
-data.forEach(chat => {
+        const startPress = (e) => {
+            isLongPress = false;
 
-    const item = document.createElement("div");
+            // Capturamos las coordenadas inmediatamente al iniciar el toque
+            const touch = e.touches ? (e.touches[0] || e.changedTouches[0]) : e;
+            const startX = touch ? touch.clientX : 0;
+            const startY = touch ? touch.clientY : 0;
 
-    item.className = "recent-chat";
+            pressTimer = setTimeout(() => {
+                isLongPress = true;
+                selectedChatForCtx = chat;
+                
+                const x = Math.min(startX, window.innerWidth - 200);
+                const y = Math.min(startY, window.innerHeight - 120);
 
-    item.textContent = chat.title || "New Chat";
+                ctxMenu.style.left = x + "px";
+                ctxMenu.style.top = y + "px";
+                ctxMenu.style.display = "block";
 
-    // Variables para detectar la pulsación larga (Long Press)
-    let pressTimer = null;
-    let isLongPress = false;
-
-    const startPress = (e) => {
-        isLongPress = false;
-        pressTimer = setTimeout(() => {
-            isLongPress = true;
-            selectedChatForCtx = chat;
-            
-            // Posicionar el menú cerca del toque
-            const touch = e.touches ? e.touches[0] : e;
-            const x = Math.min(touch.clientX, window.innerWidth - 200);
-            const y = Math.min(touch.clientY, window.innerHeight - 120);
-
-            ctxMenu.style.left = x + "px";
-            ctxMenu.style.top = y + "px";
-            ctxMenu.style.display = "block";
-
-            if (navigator.vibrate) navigator.vibrate(40); // Pequeña vibración háptica
-        }, 500);
-    };
-
-    const cancelPress = () => {
-        clearTimeout(pressTimer);
-    };
-
-    item.addEventListener("touchstart", startPress, { passive: true });
-    item.addEventListener("touchend", cancelPress);
-    item.addEventListener("touchmove", cancelPress);
-
-    item.addEventListener("mousedown", startPress);
-    item.addEventListener("mouseup", cancelPress);
-    item.addEventListener("mouseleave", cancelPress);
-
-    item.addEventListener("contextmenu", (e) => e.preventDefault());
-
-    item.onclick = async () => {
-
-    if (isLongPress) {
-        isLongPress = false;
-        return;
-    }
-
-    hideContextMenu();
-
-    currentChatId = chat.id;
-        
-
-    const { data: messages, error } = await supabaseClient
-        .from("messages")
-        .select("*")
-        .eq("chat_id", chat.id)
-        .order("created_at", { ascending: true });
-
-    if (error) {
-
-        console.error(error);
-        return;
-
-    }
-
-    chatHistory = [];
-
-    chatBox.innerHTML = "";
-
-    messages.forEach(msg => {
-
-        const historyItem = {
-            type: msg.role === "assistant" ? "ai" : "user",
-            text: msg.content
+                if (navigator.vibrate) navigator.vibrate(40);
+            }, 500);
         };
 
-        chatHistory.push(historyItem);
+        const cancelPress = (evt) => {
+            clearTimeout(pressTimer);
+            if (isLongPress && evt && evt.cancelable) {
+                evt.preventDefault(); // Evita que al levantar el dedo se cierre el menú por accidente
+            }
+        };
 
-        const div = document.createElement("div");
+        item.addEventListener("touchstart", startPress, { passive: true });
+        item.addEventListener("touchend", cancelPress);
+        item.addEventListener("touchmove", cancelPress);
 
-        div.className =
-            historyItem.type === "ai"
-            ? "message ai"
-            : "message";
+        item.addEventListener("mousedown", startPress);
+        item.addEventListener("mouseup", cancelPress);
+        item.addEventListener("mouseleave", cancelPress);
+
+        item.addEventListener("contextmenu", (e) => e.preventDefault());
+
+        item.onclick = async () => {
+
+            if (isLongPress) {
+                isLongPress = false;
+                return;
+            }
+
+            hideContextMenu();
+
+            currentChatId = chat.id;
+
+            const { data: messages, error } = await supabaseClient
+                .from("messages")
+                .select("*")
+                .eq("chat_id", chat.id)
+                .order("created_at", { ascending: true });
+
+            if (error) {
+                console.error(error);
+                return;
+            }
+
+            chatHistory = [];
+            chatBox.innerHTML = "";
+
+            messages.forEach(msg => {
+
+                const historyItem = {
+                    type: msg.role === "assistant" ? "ai" : "user",
+                    text: msg.content
+                };
+
+                chatHistory.push(historyItem);
+
+                const div = document.createElement("div");
+                div.className = historyItem.type === "ai" ? "message ai" : "message";
 
                 if (historyItem.type === "user") {
+                    div.style.background = "#ffffff";
+                    div.style.marginLeft = "auto";
+                    div.style.border = "1px solid #d8dde5";
+                    div.style.borderRadius = "18px";
+                    div.style.marginRight = "12px";
+                }
 
-            div.style.background = "#ffffff";
-            div.style.marginLeft = "auto";
-            div.style.border = "1px solid #d8dde5";
-            div.style.borderRadius = "18px";
-            div.style.marginRight = "12px";
+                div.textContent = historyItem.text;
+                chatBox.appendChild(div);
 
-        }
+                if (historyItem.type === "ai") {
+                    const copyBtn = document.createElement("div");
+                    copyBtn.className = "copy-btn";
+                    copyBtn.innerHTML = "⧉";
 
-        div.textContent = historyItem.text;
+                    copyBtn.onclick = () => {
+                        navigator.clipboard.writeText(historyItem.text);
 
-        chatBox.appendChild(div);
+                        const toast = document.createElement("div");
+                        toast.innerText = "Copiado";
+                        toast.style.position = "fixed";
+                        toast.style.bottom = "100px";
+                        toast.style.left = "50%";
+                        toast.style.transform = "translateX(-50%)";
+                        toast.style.background = "#0f172a";
+                        toast.style.color = "white";
+                        toast.style.padding = "8px 14px";
+                        toast.style.borderRadius = "10px";
+                        toast.style.fontSize = "14px";
+                        toast.style.zIndex = "9999";
 
-        if (historyItem.type === "ai") {
-            const copyBtn = document.createElement("div");
-            copyBtn.className = "copy-btn";
-            copyBtn.innerHTML = "⧉";
+                        document.body.appendChild(toast);
 
-            copyBtn.onclick = () => {
-                navigator.clipboard.writeText(historyItem.text);
+                        setTimeout(() => {
+                            toast.remove();
+                        }, 1500);
+                    };
 
-                const toast = document.createElement("div");
-                toast.innerText = "Copiado";
-                toast.style.position = "fixed";
-                toast.style.bottom = "100px";
-                toast.style.left = "50%";
-                toast.style.transform = "translateX(-50%)";
-                toast.style.background = "#0f172a";
-                toast.style.color = "white";
-                toast.style.padding = "8px 14px";
-                toast.style.borderRadius = "10px";
-                toast.style.fontSize = "14px";
-                toast.style.zIndex = "9999";
+                    chatBox.appendChild(copyBtn);
+                }
 
-                document.body.appendChild(toast);
+            });
 
-                setTimeout(() => {
-                    toast.remove();
-                }, 1500);
-            };
-
-            chatBox.appendChild(copyBtn);
-        }
-
-    });
-
-    closeSidebar();
-        
-
-};
+            closeSidebar();
+        };
 
         recentChats.appendChild(item);
 
-});
+    });
 
-        // Cargar automáticamente el chat más reciente si existe y no hay chat activo
     if (data && data.length > 0 && !currentChatId) {
-
         if (recentChats.children[0]) {
-
             recentChats.children[0].click();
-
         }
-
     }
 
-    }
-
-
+}
 
 
 // ===== CONTROL DEL MODAL PERSONALIZADO =====
@@ -2184,6 +2162,7 @@ const modalCancelBtn = document.getElementById("modal-cancel-btn");
 const modalConfirmBtn = document.getElementById("modal-confirm-btn");
 
 let onModalConfirm = null;
+let modalOpenedAt = 0; // Escudo protector contra toques iniciales
 
 function closeModal() {
     if (modalOverlay) modalOverlay.classList.remove("show");
@@ -2194,15 +2173,28 @@ function closeModal() {
     onModalConfirm = null;
 }
 
-if (modalCancelBtn) modalCancelBtn.onclick = closeModal;
+function showCustomModal() {
+    modalOpenedAt = Date.now();
+    modalOverlay.classList.add("show");
+}
+
+if (modalCancelBtn) {
+    modalCancelBtn.onclick = (e) => {
+        e.stopPropagation();
+        closeModal();
+    };
+}
+
 if (modalOverlay) {
     modalOverlay.onclick = (e) => {
+        if (Date.now() - modalOpenedAt < 350) return; // Ignora clics fantasmas en los primeros 350ms
         if (e.target === modalOverlay) closeModal();
     };
 }
 
 if (modalConfirmBtn) {
-    modalConfirmBtn.onclick = async () => {
+    modalConfirmBtn.onclick = async (e) => {
+        e.stopPropagation();
         if (onModalConfirm) {
             await onModalConfirm();
         }
@@ -2215,7 +2207,7 @@ const renameBtn = document.getElementById("ctx-rename");
 const deleteBtn = document.getElementById("ctx-delete");
 
 if (renameBtn) {
-    renameBtn.addEventListener("pointerdown", (e) => {
+    renameBtn.onclick = (e) => {
         e.stopPropagation();
         e.preventDefault();
         const chatToRename = selectedChatForCtx;
@@ -2243,13 +2235,13 @@ if (renameBtn) {
             }
         };
 
-        modalOverlay.classList.add("show");
+        showCustomModal();
         setTimeout(() => modalInput.focus(), 150);
-    });
+    };
 }
 
 if (deleteBtn) {
-    deleteBtn.addEventListener("pointerdown", (e) => {
+    deleteBtn.onclick = (e) => {
         e.stopPropagation();
         e.preventDefault();
         const chatToDelete = selectedChatForCtx;
@@ -2284,12 +2276,10 @@ if (deleteBtn) {
             await loadChats();
         };
 
-        modalOverlay.classList.add("show");
-    });
-}
+        showCustomModal();
+    };
+    }
     
-
-
 
 
 async function saveMessage(role, content) {
