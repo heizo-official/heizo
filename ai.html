@@ -2159,40 +2159,87 @@ data.forEach(chat => {
 
     }
 
+// ===== CONTROL DEL MODAL PERSONALIZADO =====
+const modalOverlay = document.getElementById("custom-modal-overlay");
+const modalTitle = document.getElementById("modal-title");
+const modalDesc = document.getElementById("modal-desc");
+const modalInput = document.getElementById("modal-input");
+const modalCancelBtn = document.getElementById("modal-cancel-btn");
+const modalConfirmBtn = document.getElementById("modal-confirm-btn");
+
+let onModalConfirm = null;
+
+function closeModal() {
+    modalOverlay.classList.remove("show");
+    modalInput.style.display = "none";
+    modalInput.value = "";
+    onModalConfirm = null;
+}
+
+modalCancelBtn.onclick = closeModal;
+modalOverlay.onclick = (e) => {
+    if (e.target === modalOverlay) closeModal();
+};
+
+modalConfirmBtn.onclick = async () => {
+    if (onModalConfirm) {
+        await onModalConfirm();
+    }
+    closeModal();
+};
+
 // Acciones del menú contextual (Renombrar y Borrar)
-document.getElementById("ctx-rename").onclick = async (e) => {
-    e.stopPropagation(); // Evita que el toque se pierda antes de abrir la alerta
+document.getElementById("ctx-rename").onclick = (e) => {
+    e.stopPropagation();
     const chatToRename = selectedChatForCtx;
     hideContextMenu();
 
     if (!chatToRename) return;
 
-    const newTitle = prompt("Nuevo nombre para el chat:", chatToRename.title || "New Chat");
-    if (newTitle && newTitle.trim() !== "") {
-        await supabaseClient
-            .from("chats")
-            .update({ title: newTitle.trim() })
-            .eq("id", chatToRename.id);
+    modalTitle.textContent = "Renombrar chat";
+    modalDesc.textContent = "Ingresa el nuevo nombre para este chat:";
+    modalInput.style.display = "block";
+    modalInput.value = chatToRename.title || "New Chat";
 
-        await loadChats();
-    }
+    modalConfirmBtn.textContent = "Guardar";
+    modalConfirmBtn.className = "primary";
+
+    onModalConfirm = async () => {
+        const newTitle = modalInput.value.trim();
+        if (newTitle !== "") {
+            await supabaseClient
+                .from("chats")
+                .update({ title: newTitle })
+                .eq("id", chatToRename.id);
+
+            await loadChats();
+        }
+    };
+
+    modalOverlay.classList.add("show");
+    setTimeout(() => modalInput.focus(), 100);
 };
 
-document.getElementById("ctx-delete").onclick = async (e) => {
-    e.stopPropagation(); // Evita que el toque se pierda antes de abrir la confirmación
+document.getElementById("ctx-delete").onclick = (e) => {
+    e.stopPropagation();
     const chatToDelete = selectedChatForCtx;
     hideContextMenu();
 
     if (!chatToDelete) return;
 
-    if (confirm("¿Estás seguro de que deseas eliminar este chat?")) {
-        // Borrar mensajes asociados
+    modalTitle.textContent = "Eliminar chat";
+    modalDesc.textContent = "Esta acción no se puede deshacer. Se eliminará el historial de este chat.";
+    modalInput.style.display = "none";
+
+    modalConfirmBtn.textContent = "Eliminar";
+    modalConfirmBtn.className = "delete";
+
+    onModalConfirm = async () => {
         await supabaseClient
             .from("messages")
             .delete()
             .eq("chat_id", chatToDelete.id);
 
-        // Borrar el chat
         await supabaseClient
             .from("chats")
             .delete()
@@ -2205,8 +2252,11 @@ document.getElementById("ctx-delete").onclick = async (e) => {
         }
 
         await loadChats();
-    }
+    };
+
+    modalOverlay.classList.add("show");
 };
+    
     
 
 
