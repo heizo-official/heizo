@@ -1622,16 +1622,91 @@ How can I help you today?
 
 </div>
 
+<div id="image-suggestions">
+    <button class="suggestion-item" id="chip-create">
+        <span class="suggestion-icon">
+            <svg viewBox="0 0 512 512" fill="none" stroke="currentColor">
+                <rect x="68" y="68" width="376" height="376" rx="44" ry="44" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="206" cy="194" r="36" stroke-width="32"/>
+                <path d="M 68 356 L 210 262 L 246 308 L 306 218 L 444 312" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </span>
+        <span>Crea una imagen</span>
+    </button>
+
+    <button class="suggestion-item" id="chip-edit">
+        <span class="suggestion-icon">✍︎</span>
+        <span>Edita una imagen</span>
+    </button>
+</div>
+
+<div id="image-preview-container" style="display:none;">
+    <div class="image-preview-wrapper">
+        <img id="image-preview" src="" alt="Previsualización">
+        <button id="remove-preview-btn">✕</button>
+    </div>
+</div>
+
 <div class="input-area">
 
-<textarea
-placeholder="Ask anything..."
-rows="1"
-></textarea>
+    <button id="attach-plus-btn" type="button" aria-label="Adjuntar">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+    </button>
 
-<button id="send-btn">Send</button>
+    <textarea placeholder="Ask anything..." rows="1"></textarea>
+
+    <button id="send-btn">Send</button>
 
 </div>
+
+<div id="attach-menu-overlay">
+    <div id="attach-menu-sheet">
+        <div class="attach-sheet-header" id="attach-sheet-header">
+            <div class="attach-sheet-handle"></div>
+        </div>
+        <div class="attach-options-grid">
+
+            <button class="attach-option-btn" id="opt-photos">
+                <div class="attach-icon-circle">
+                    <svg viewBox="0 0 512 512" width="24" height="24" fill="none" stroke="currentColor" stroke-width="32" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="68" y="68" width="376" height="376" rx="44" ry="44"/>
+                        <circle cx="206" cy="194" r="36"/>
+                        <path d="M 68 356 L 210 262 L 246 308 L 306 218 L 444 312"/>
+                    </svg>
+                </div>
+                <span>Fotos</span>
+            </button>
+
+            <button class="attach-option-btn" id="opt-camera">
+                <div class="attach-icon-circle">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                </div>
+                <span>Cámara</span>
+            </button>
+
+            <button class="attach-option-btn" id="opt-files">
+                <div class="attach-icon-circle">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                    </svg>
+                </div>
+                <span>Archivos</span>
+            </button>
+
+        </div>
+    </div>
+</div>
+
+<input type="file" id="input-gallery" accept="image/*" style="display:none;">
+<input type="file" id="input-camera" accept="image/*" capture="environment" style="display:none;">
+<input type="file" id="input-files" accept="*/*" style="display:none;">
+    
     
 
 <script>
