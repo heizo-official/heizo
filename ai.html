@@ -1895,18 +1895,7 @@ document.addEventListener("pointerdown", (e) => {
 
 recentChats.innerHTML = "";
 
-let selectedChatForCtx = null;
-const ctxMenu = document.getElementById("chat-context-menu");
 
-function hideContextMenu() {
-    if (ctxMenu) ctxMenu.style.display = "none";
-}
-
-document.addEventListener("click", (e) => {
-    if (ctxMenu && !ctxMenu.contains(e.target)) {
-        hideContextMenu();
-    }
-});
 
 data.forEach(chat => {
 
