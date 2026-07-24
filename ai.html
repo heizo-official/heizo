@@ -1878,6 +1878,19 @@ async function createChat(title = "New Chat") {
 
 recentChats.innerHTML = "";
 
+let selectedChatForCtx = null;
+const ctxMenu = document.getElementById("chat-context-menu");
+
+function hideContextMenu() {
+    if (ctxMenu) ctxMenu.style.display = "none";
+}
+
+document.addEventListener("click", (e) => {
+    if (ctxMenu && !ctxMenu.contains(e.target)) {
+        hideContextMenu();
+    }
+});
+
 data.forEach(chat => {
 
     const item = document.createElement("div");
@@ -1886,9 +1899,54 @@ data.forEach(chat => {
 
     item.textContent = chat.title || "New Chat";
 
+    // Variables para detectar la pulsación larga (Long Press)
+    let pressTimer = null;
+    let isLongPress = false;
+
+    const startPress = (e) => {
+        isLongPress = false;
+        pressTimer = setTimeout(() => {
+            isLongPress = true;
+            selectedChatForCtx = chat;
+            
+            // Posicionar el menú cerca del toque
+            const touch = e.touches ? e.touches[0] : e;
+            const x = Math.min(touch.clientX, window.innerWidth - 200);
+            const y = Math.min(touch.clientY, window.innerHeight - 120);
+
+            ctxMenu.style.left = x + "px";
+            ctxMenu.style.top = y + "px";
+            ctxMenu.style.display = "block";
+
+            if (navigator.vibrate) navigator.vibrate(40); // Pequeña vibración háptica
+        }, 500);
+    };
+
+    const cancelPress = () => {
+        clearTimeout(pressTimer);
+    };
+
+    item.addEventListener("touchstart", startPress, { passive: true });
+    item.addEventListener("touchend", cancelPress);
+    item.addEventListener("touchmove", cancelPress);
+
+    item.addEventListener("mousedown", startPress);
+    item.addEventListener("mouseup", cancelPress);
+    item.addEventListener("mouseleave", cancelPress);
+
+    item.addEventListener("contextmenu", (e) => e.preventDefault());
+
     item.onclick = async () => {
 
+    if (isLongPress) {
+        isLongPress = false;
+        return;
+    }
+
+    hideContextMenu();
+
     currentChatId = chat.id;
+        
 
     const { data: messages, error } = await supabaseClient
         .from("messages")
