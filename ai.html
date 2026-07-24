@@ -938,6 +938,109 @@ padding-right:2px;
     color:#ef4444;
 }
 
+
+/* ===== MODAL PERSONALIZADO (ESTILO CHATGPT) ===== */
+#custom-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999999;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+}
+
+#custom-modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+#custom-modal {
+    background: #f2f2f7;
+    border-radius: 28px;
+    padding: 24px;
+    width: 100%;
+    max-width: 320px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
+    text-align: left;
+    box-sizing: border-box;
+    transform: scale(0.92);
+    transition: transform 0.2s ease;
+}
+
+#custom-modal-overlay.show #custom-modal {
+    transform: scale(1);
+}
+
+#modal-title {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+}
+
+#modal-desc {
+    margin: 0 0 20px 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #6b7280;
+}
+
+#modal-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 14px;
+    font-size: 15px;
+    margin-bottom: 20px;
+    outline: none;
+    box-sizing: border-box;
+    background: #ffffff;
+    color: #111827;
+    font-family: inherit;
+}
+
+#modal-input:focus {
+    border-color: #2080ff;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    align-items: center;
+}
+
+.modal-actions button {
+    background: transparent;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-family: inherit;
+}
+
+#modal-cancel-btn {
+    color: #111827;
+}
+
+#modal-confirm-btn.delete {
+    color: #ef4444;
+}
+
+#modal-confirm-btn.primary {
+    color: #2080ff;
+    }
+
+
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
