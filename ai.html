@@ -367,7 +367,7 @@ color:#0f2747;
     resize: none;
     height: 26px;
     min-height: 26px;
-    max-height: 160px;
+    max-height: 180px;
     line-height: 1.4;
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -1791,10 +1791,19 @@ const button = document.getElementById("send-btn");
 const chatBox = document.querySelector(".chat-box");
 
 function resetInputHeight() {
-    input.style.height = "50px";
-    const newHeight = Math.min(input.scrollHeight, 180);
-    input.style.height = newHeight + "px";
+    const inputCard = document.querySelector(".input-card");
+    input.style.height = "26px";
+    
+    if (input.scrollHeight > 32) {
+        inputCard.classList.add("multiline");
+        const newHeight = Math.min(input.scrollHeight, 180);
+        input.style.height = newHeight + "px";
+    } else {
+        inputCard.classList.remove("multiline");
+        input.style.height = "26px";
+    }
 }
+    
 
 input.addEventListener("input", resetInputHeight);
 
