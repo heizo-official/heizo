@@ -2691,15 +2691,28 @@ async function loadChats() {
                     const cleanText = historyItem.text ? historyItem.text.trim() : "";
                     
                     // Si el historial de la IA contiene una imagen
-                    if (cleanText.startsWith("http") || cleanText.startsWith("data:image")) {
+                       if (cleanText.startsWith("http") || cleanText.startsWith("data:image")) {
+                        div.style.padding = "6px";
+                        div.style.borderRadius = "20px";
                         div.innerHTML = `
                             <div class="image-card-container">
-                                <img src="${cleanText}" style="width:100%; max-width:380px; border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.08);">
-                                <div class="image-actions-bar" style="margin-top:8px;">
-                                    <button class="img-btn" onclick="downloadImage('${cleanText}', 'imagen_heizo')">⬇️ Descargar</button>
-                                </div>
+                                <div class="image-skeleton-loader"></div>
+                                <img src="${cleanText}" 
+                                     onload="this.classList.add('loaded'); if(this.previousElementSibling) this.previousElementSibling.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.classList.add('visible');" 
+                                     alt="HEIZO AI Image">
+                                <button class="img-download-btn-floating" 
+                                        title="Descargar imagen" 
+                                        onclick="downloadImage('${cleanText}', 'imagen_heizo')">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 15V3"/>
+                                        <path d="M7 10l5 5 5-5"/>
+                                        <path d="M20 21H4"/>
+                                    </svg>
+                                </button>
                             </div>
                         `;
+                        }
+                    
                     } else {
                         div.textContent = historyItem.text;
                     }
