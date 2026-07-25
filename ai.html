@@ -2070,7 +2070,8 @@ headers: {
 },
 body: JSON.stringify({
 message: userText,
-history: chatHistory.slice(-30)
+history: chatHistory.slice(-30),
+image: selectedImageBase64 || null
 })
 });
 
