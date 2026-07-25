@@ -2687,11 +2687,11 @@ async function loadChats() {
                     div.style.borderRadius = "18px";
                     div.style.marginRight = "12px";
                     div.textContent = historyItem.text;
-                } else {
+                                } else {
                     const cleanText = historyItem.text ? historyItem.text.trim() : "";
                     
                     // Si el historial de la IA contiene una imagen
-                       if (cleanText.startsWith("http") || cleanText.startsWith("data:image")) {
+                    if (cleanText.startsWith("http") || cleanText.startsWith("data:image")) {
                         div.style.padding = "6px";
                         div.style.borderRadius = "20px";
                         div.innerHTML = `
@@ -2711,13 +2711,11 @@ async function loadChats() {
                                 </button>
                             </div>
                         `;
-                        }
-                    
                     } else {
                         div.textContent = historyItem.text;
                     }
                 }
-
+                            
                 chatBox.appendChild(div);
 
                 if (historyItem.type === "ai" && !historyItem.text.trim().startsWith("http") && !historyItem.text.trim().startsWith("data:image")) {
