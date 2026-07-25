@@ -2071,7 +2071,8 @@ headers: {
 body: JSON.stringify({
 message: userText,
 history: chatHistory.slice(-30),
-image: selectedImageBase64 || null
+image: selectedImageBase64 || null,
+is_image_mode: isImagesMode
 })
 });
 
