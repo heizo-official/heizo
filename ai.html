@@ -2179,13 +2179,15 @@ try {
 
 chatBox.scrollTop = chatBox.scrollHeight;
 
-// Detectar si la respuesta es una imagen generada (Base64 o URL) para renderizarla
-if (fullReply.startsWith("data:image") || fullReply.startsWith("http")) {
+// Detectar si la respuesta es una imagen limpia (Base64 o URL http)
+const cleanReply = fullReply.trim();
+
+if (cleanReply.startsWith("data:image") || cleanReply.startsWith("http")) {
     aiMessage.innerHTML = `
         <div class="image-card-container">
-            <img src="${fullReply}" style="width:100%; max-width:380px; border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.08);">
-            <div class="image-actions-bar">
-                <button class="img-btn" onclick="downloadImage('${fullReply}', 'imagen_heizo')">⬇️ Descargar</button>
+            <img src="${cleanReply}" style="width:100%; max-width:380px; border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.08);">
+            <div class="image-actions-bar" style="margin-top:8px;">
+                <button class="img-btn" onclick="downloadImage('${cleanReply}', 'imagen_heizo')">⬇️ Descargar</button>
             </div>
         </div>
     `;
