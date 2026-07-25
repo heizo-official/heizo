@@ -2174,6 +2174,19 @@ try {
 
 chatBox.scrollTop = chatBox.scrollHeight;
 
+// Detectar si la respuesta es una imagen generada (Base64 o URL) para renderizarla
+if (fullReply.startsWith("data:image") || fullReply.startsWith("http")) {
+    aiMessage.innerHTML = `
+        <div class="image-card-container">
+            <img src="${fullReply}" style="width:100%; max-width:380px; border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.08);">
+            <div class="image-actions-bar">
+                <button class="img-btn" onclick="downloadImage('${fullReply}', 'imagen_heizo')">⬇️ Descargar</button>
+            </div>
+        </div>
+    `;
+}
+
+
 const userTop = userMessage.offsetTop;
 
 window.scrollTo({
