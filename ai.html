@@ -2552,7 +2552,7 @@ async function loadChats() {
             chatHistory = [];
             chatBox.innerHTML = "";
 
-            messages.forEach(msg => {
+                        messages.forEach(msg => {
 
                 const historyItem = {
                     type: msg.role === "assistant" ? "ai" : "user",
@@ -2570,12 +2570,28 @@ async function loadChats() {
                     div.style.border = "1px solid #d8dde5";
                     div.style.borderRadius = "18px";
                     div.style.marginRight = "12px";
+                    div.textContent = historyItem.text;
+                } else {
+                    const cleanText = historyItem.text ? historyItem.text.trim() : "";
+                    
+                    // Si el historial de la IA contiene una imagen
+                    if (cleanText.startsWith("http") || cleanText.startsWith("data:image")) {
+                        div.innerHTML = `
+                            <div class="image-card-container">
+                                <img src="${cleanText}" style="width:100%; max-width:380px; border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.08);">
+                                <div class="image-actions-bar" style="margin-top:8px;">
+                                    <button class="img-btn" onclick="downloadImage('${cleanText}', 'imagen_heizo')">⬇️ Descargar</button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        div.textContent = historyItem.text;
+                    }
                 }
 
-                div.textContent = historyItem.text;
                 chatBox.appendChild(div);
 
-                if (historyItem.type === "ai") {
+                if (historyItem.type === "ai" && !historyItem.text.trim().startsWith("http") && !historyItem.text.trim().startsWith("data:image")) {
                     const copyBtn = document.createElement("div");
                     copyBtn.className = "copy-btn";
                     copyBtn.innerHTML = "⧉";
