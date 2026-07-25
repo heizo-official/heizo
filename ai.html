@@ -1390,11 +1390,10 @@ padding-right:2px;
 .image-card-container {
     position: relative;
     width: 100%;
-    max-width: 380px;
-    border-radius: 20px;
+    max-width: 100%;
+    border-radius: 16px;
     overflow: hidden;
     background: #f8fafc;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
 
 .image-card-container img {
@@ -2289,6 +2288,8 @@ chatBox.scrollTop = chatBox.scrollHeight;
 const cleanReply = fullReply.trim();
 
 if (cleanReply.startsWith("data:image") || cleanReply.startsWith("http")) {
+    aiMessage.style.padding = "6px";
+    aiMessage.style.borderRadius = "20px";
     aiMessage.innerHTML = `
         <div class="image-card-container">
             <div class="image-skeleton-loader" id="loader-${Date.now()}"></div>
