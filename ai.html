@@ -327,106 +327,127 @@ background:#eef6ff;
 color:#0f2747;
 }
 
-.input-area{
-    position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
-    padding:10px 12px;
-    background:#ffffff;
-    z-index:1000;
-    box-sizing:border-box;
+/* ===== CÁPSULA ADAPTATIVA DINÁMICA (ESTILO GEMINI/CHATGPT) ===== */
+.input-area {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 12px;
+    background: #ffffff;
+    z-index: 1000;
+    box-sizing: border-box;
 }
 
-.input-card{
-    background:#ffffff;
-    border:1.5px solid #e2e8f0;
-    border-radius:24px;
-    padding:10px 12px 8px 12px;
-    box-shadow:0 4px 16px rgba(0,0,0,0.06);
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    box-sizing:border-box;
+/* Estado inicial: 1 sola línea horizontal */
+.input-card {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 26px;
+    padding: 6px 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, border-radius 0.2s ease;
 }
 
-.input-card:focus-within{
-    border-color:#cbd5e1;
+.input-card:focus-within {
+    border-color: #cbd5e1;
 }
 
-.input-card textarea{
-    width:100%;
-    padding:4px 6px;
-    border:none;
-    background:transparent;
-    box-shadow:none;
-    font-size:16px;
-    font-family:Inter, sans-serif;
-    resize:none;
-    height:50px;
-    max-height:180px;
-    line-height:1.4;
-    overflow-y:auto;
-    overscroll-behavior:contain;
-    outline:none;
-    box-sizing:border-box;
-    color:#1a1f2b;
+.input-card textarea {
+    flex: 1;
+    padding: 2px 4px;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    font-family: Inter, sans-serif;
+    resize: none;
+    height: 26px;
+    min-height: 26px;
+    max-height: 160px;
+    line-height: 1.4;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    outline: none;
+    box-sizing: border-box;
+    color: #1a1f2b;
 }
 
-.input-bottom-bar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    width:100%;
+/* Estado MultilÍnea (Se activa automáticamente al escribir 2+ líneas) */
+.input-card.multiline {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    border-radius: 24px;
+    padding: 10px 12px 8px 12px;
+    gap: 8px;
 }
 
-#attach-plus-btn{
-    width:40px;
-    height:40px;
-    border-radius:50%;
-    border:none;
-    background:transparent;
-    box-shadow:none;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    flex-shrink:0;
-    color:#0f2747;
-    padding:0;
-    transition:background 0.2s ease, transform 0.15s ease;
+.input-card.multiline textarea {
+    grid-column: 1 / -1;
+    width: 100%;
 }
 
-#attach-plus-btn:hover{
-    background:#f1f5f9;
+.input-card.multiline #attach-plus-btn {
+    grid-column: 1;
+    justify-self: start;
 }
 
-#attach-plus-btn:active{
-    transform:scale(0.92);
+.input-card.multiline #send-btn {
+    grid-column: 2;
+    justify-self: end;
 }
 
-#send-btn{
-    width:36px;
-    height:36px;
-    border-radius:50%;
-    border:none;
-    background:#0f2747;
-    color:white;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    flex-shrink:0;
-    padding:0;
-    transition:background 0.2s ease, transform 0.15s ease;
+#attach-plus-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    color: #0f2747;
+    padding: 0;
+    transition: background 0.2s ease, transform 0.15s ease;
 }
 
-#send-btn:hover{
-    background:#1b4f9c;
+#attach-plus-btn:hover {
+    background: #f1f5f9;
 }
 
-#send-btn:active{
-    transform:scale(0.92);
+#attach-plus-btn:active {
+    transform: scale(0.92);
+}
+
+#send-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: #0f2747;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 0;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+#send-btn:hover {
+    background: #1b4f9c;
+}
+
+#send-btn:active {
+    transform: scale(0.92);
 }
     
 
