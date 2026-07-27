@@ -2132,7 +2132,15 @@ userMessage.style.borderRadius = "18px";
 userMessage.style.marginRight = "12px";
 
 const userText = input.value;
-userMessage.textContent = userText;
+
+if (imageToSend) {
+    userMessage.innerHTML = `
+        ${userText ? `<div style="margin-bottom:6px;">${userText}</div>` : ''}
+        <img src="${imageToSend}" style="max-width:100%; max-height:220px; border-radius:14px; display:block;">
+    `;
+} else {
+    userMessage.textContent = userText;
+}
 input.value = "";
 resetInputHeight();
 
