@@ -2099,9 +2099,11 @@ let isGenerating = false;
 
 button.addEventListener("click", async () => {
 
-if(input.value.trim() === "") return;
+if(input.value.trim() === "" && !selectedImageBase64) return;
 if(isGenerating) return;
 
+// Guardar la foto en una variable antes de limpiar la previsualización
+const imageToSend = selectedImageBase64;
 
 if (!currentChatId) {
 
