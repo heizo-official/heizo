@@ -2121,48 +2121,56 @@ button.disabled = true;
 
 if (imageSuggestions) imageSuggestions.style.display = "none";
 
+    
+ const userText = input.value.trim();
 
+// 1. Si hay foto adjunta, renderizarla ARRIBA separada de la burbuja (Estilo ChatGPT / Gemini)
+if (imageToSend) {
+    const userImgContainer = document.createElement("div");
+    userImgContainer.style.marginLeft = "auto";
+    userImgContainer.style.marginRight = "12px";
+    userImgContainer.style.marginBottom = "6px";
+    userImgContainer.style.maxWidth = "75%";
+    userImgContainer.innerHTML = `
+        <img src="${imageToSend}" style="width:100%; max-height:280px; object-fit:cover; border-radius:18px; display:block; border:1px solid #d8dde5; box-shadow:0 4px 12px rgba(0,0,0,0.06);">
+    `;
+    chatBox.appendChild(userImgContainer);
+}
+
+// 2. Burbuja de texto limpia del usuario
 const userMessage = document.createElement("div");
-
 userMessage.className = "message";
 userMessage.style.background = "#ffffff";
 userMessage.style.marginLeft = "auto";
 userMessage.style.border = "1px solid #d8dde5";
 userMessage.style.borderRadius = "18px";
 userMessage.style.marginRight = "12px";
+userMessage.textContent = userText || " ";
 
-const userText = input.value;
-
-if (imageToSend) {
-    userMessage.innerHTML = `
-        ${userText ? `<div style="margin-bottom:6px;">${userText}</div>` : ''}
-        <img src="${imageToSend}" style="max-width:100%; max-height:220px; border-radius:14px; display:block;">
-    `;
-} else {
-    userMessage.textContent = userText;
-}
 input.value = "";
 resetInputHeight();
-
 clearAttachedImage();
 
 chatBox.appendChild(userMessage);
-    
 
 userMessage.scrollIntoView({
     behavior: "instant",
     block: "start"
 });
 
+// 3. Estructurar el guardado para conservar la foto al recargar la página
+const payloadToSave = imageToSend 
+    ? JSON.stringify({ text: userText, image: imageToSend })
+    : userText;
+
 chatHistory.push({
     type: "user",
-    text: userText
+    text: userText,
+    image: imageToSend || null
 });
 
-
-await saveMessage("user", userText);
-
-
+await saveMessage("user", payloadToSave);    
+    
 const thinkingMessage = document.createElement("div");
 
 thinkingMessage.className = "message ai";
