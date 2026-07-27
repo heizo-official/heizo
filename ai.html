@@ -2686,26 +2686,57 @@ async function loadChats() {
             chatHistory = [];
             chatBox.innerHTML = "";
 
-                        messages.forEach(msg => {
+            messages.forEach(msg => {
+
+                let userTextVal = msg.content;
+                let userImgVal = null;
+
+                // Detectar si el mensaje guardado del usuario incluía una foto adjunta
+                if (msg.role === "user") {
+                    try {
+                        const parsed = JSON.parse(msg.content);
+                        if (parsed && typeof parsed === "object" && (parsed.image || parsed.text !== undefined)) {
+                            userTextVal = parsed.text || "";
+                            userImgVal = parsed.image || null;
+                        }
+                    } catch (e) {
+                        userTextVal = msg.content;
+                    }
+                }
 
                 const historyItem = {
                     type: msg.role === "assistant" ? "ai" : "user",
-                    text: msg.content
+                    text: userTextVal,
+                    image: userImgVal
                 };
 
                 chatHistory.push(historyItem);
 
-                const div = document.createElement("div");
-                div.className = historyItem.type === "ai" ? "message ai" : "message";
-
                 if (historyItem.type === "user") {
+                    // Si el usuario envió una foto, colocar la foto ARRIBA primero
+                    if (historyItem.image) {
+                        const userImgDiv = document.createElement("div");
+                        userImgDiv.style.marginLeft = "auto";
+                        userImgDiv.style.marginRight = "12px";
+                        userImgDiv.style.marginBottom = "6px";
+                        userImgDiv.style.maxWidth = "75%";
+                        userImgDiv.innerHTML = `
+                            <img src="${historyItem.image}" style="width:100%; max-height:280px; object-fit:cover; border-radius:18px; display:block; border:1px solid #d8dde5; box-shadow:0 4px 12px rgba(0,0,0,0.06);">
+                        `;
+                        chatBox.appendChild(userImgDiv);
+                    }
+
+                    // Burbuja de texto del usuario
+                    const div = document.createElement("div");
+                    div.className = "message";
                     div.style.background = "#ffffff";
                     div.style.marginLeft = "auto";
                     div.style.border = "1px solid #d8dde5";
                     div.style.borderRadius = "18px";
                     div.style.marginRight = "12px";
-                    div.textContent = historyItem.text;
-                                } else {
+                    div.textContent = historyItem.text || " ";
+                    chatBox.appendChild(div);
+                         } else {
                     const cleanText = historyItem.text ? historyItem.text.trim() : "";
                     
                     // Si el historial de la IA contiene una imagen
