@@ -2594,9 +2594,9 @@ document.addEventListener("pointerdown", (e) => {
     }
 });
 
-async function loadChats() {
+                        async function loadChats() {
 
-        const { data, error } = await supabaseClient
+    const { data, error } = await supabaseClient
         .from("chats")
         .select("*")
         .eq("user_id", currentUser.id)
@@ -2617,14 +2617,11 @@ async function loadChats() {
         item.className = "recent-chat";
         item.textContent = chat.title || "New Chat";
 
-        // Variables para detectar la pulsación larga (Long Press)
         let pressTimer = null;
         let isLongPress = false;
 
         const startPress = (e) => {
             isLongPress = false;
-
-            // Capturamos las coordenadas inmediatamente al iniciar el toque
             const touch = e.touches ? (e.touches[0] || e.changedTouches[0]) : e;
             const startX = touch ? touch.clientX : 0;
             const startY = touch ? touch.clientY : 0;
@@ -2647,18 +2644,16 @@ async function loadChats() {
         const cancelPress = (evt) => {
             clearTimeout(pressTimer);
             if (isLongPress && evt && evt.cancelable) {
-                evt.preventDefault(); // Evita que al levantar el dedo se cierre el menú por accidente
+                evt.preventDefault();
             }
         };
 
         item.addEventListener("touchstart", startPress, { passive: true });
         item.addEventListener("touchend", cancelPress);
         item.addEventListener("touchmove", cancelPress);
-
         item.addEventListener("mousedown", startPress);
         item.addEventListener("mouseup", cancelPress);
         item.addEventListener("mouseleave", cancelPress);
-
         item.addEventListener("contextmenu", (e) => e.preventDefault());
 
         item.onclick = async () => {
@@ -2688,20 +2683,28 @@ async function loadChats() {
 
             messages.forEach(msg => {
 
-                let userTextVal = msg.content;
+                let userTextVal = "";
                 let userImgVal = null;
 
-                // Detectar si el mensaje guardado del usuario incluía una foto adjunta
+                // Lectura segura para mensajes de texto plano antiguos o JSON con imagen
                 if (msg.role === "user") {
-                    try {
-                        const parsed = JSON.parse(msg.content);
-                        if (parsed && typeof parsed === "object" && (parsed.image || parsed.text !== undefined)) {
-                            userTextVal = parsed.text || "";
-                            userImgVal = parsed.image || null;
+                    if (typeof msg.content === "string" && msg.content.trim().startsWith("{")) {
+                        try {
+                            const parsed = JSON.parse(msg.content);
+                            if (parsed && typeof parsed === "object") {
+                                userTextVal = parsed.text !== undefined ? parsed.text : "";
+                                userImgVal = parsed.image || null;
+                            } else {
+                                userTextVal = msg.content;
+                            }
+                        } catch (e) {
+                            userTextVal = msg.content;
                         }
-                    } catch (e) {
-                        userTextVal = msg.content;
+                    } else {
+                        userTextVal = msg.content || "";
                     }
+                } else {
+                    userTextVal = msg.content || "";
                 }
 
                 const historyItem = {
@@ -2712,8 +2715,9 @@ async function loadChats() {
 
                 chatHistory.push(historyItem);
 
+                // 1. RENDERIZAR MENSAJE DEL USUARIO
                 if (historyItem.type === "user") {
-                    // Si el usuario envió una foto, colocar la foto ARRIBA primero
+
                     if (historyItem.image) {
                         const userImgDiv = document.createElement("div");
                         userImgDiv.style.marginLeft = "auto";
@@ -2726,24 +2730,28 @@ async function loadChats() {
                         chatBox.appendChild(userImgDiv);
                     }
 
-                    // Burbuja de texto del usuario
-                    const div = document.createElement("div");
-                    div.className = "message";
-                    div.style.background = "#ffffff";
-                    div.style.marginLeft = "auto";
-                    div.style.border = "1px solid #d8dde5";
-                    div.style.borderRadius = "18px";
-                    div.style.marginRight = "12px";
-                    div.textContent = historyItem.text || " ";
-                    chatBox.appendChild(div);
-                         } else {
+                    if (historyItem.text && historyItem.text.trim() !== "") {
+                        const userDiv = document.createElement("div");
+                        userDiv.className = "message";
+                        userDiv.style.background = "#ffffff";
+                        userDiv.style.marginLeft = "auto";
+                        userDiv.style.border = "1px solid #d8dde5";
+                        userDiv.style.borderRadius = "18px";
+                        userDiv.style.marginRight = "12px";
+                        userDiv.textContent = historyItem.text;
+                        chatBox.appendChild(userDiv);
+                    }
+
+                } else {
+                    // 2. RENDERIZAR RESPUESTA DE LA IA
+                    const aiDiv = document.createElement("div");
+                    aiDiv.className = "message ai";
                     const cleanText = historyItem.text ? historyItem.text.trim() : "";
-                    
-                    // Si el historial de la IA contiene una imagen
+
                     if (cleanText.startsWith("http") || cleanText.startsWith("data:image")) {
-                        div.style.padding = "6px";
-                        div.style.borderRadius = "20px";
-                        div.innerHTML = `
+                        aiDiv.style.padding = "6px";
+                        aiDiv.style.borderRadius = "20px";
+                        aiDiv.innerHTML = `
                             <div class="image-card-container">
                                 <div class="image-skeleton-loader"></div>
                                 <img src="${cleanText}" 
@@ -2760,42 +2768,40 @@ async function loadChats() {
                                 </button>
                             </div>
                         `;
+                        chatBox.appendChild(aiDiv);
                     } else {
-                        div.textContent = historyItem.text;
+                        aiDiv.textContent = historyItem.text;
+                        chatBox.appendChild(aiDiv);
+
+                        const copyBtn = document.createElement("div");
+                        copyBtn.className = "copy-btn";
+                        copyBtn.innerHTML = "⧉";
+
+                        copyBtn.onclick = () => {
+                            navigator.clipboard.writeText(historyItem.text);
+
+                            const toast = document.createElement("div");
+                            toast.innerText = "Copiado";
+                            toast.style.position = "fixed";
+                            toast.style.bottom = "100px";
+                            toast.style.left = "50%";
+                            toast.style.transform = "translateX(-50%)";
+                            toast.style.background = "#0f172a";
+                            toast.style.color = "white";
+                            toast.style.padding = "8px 14px";
+                            toast.style.borderRadius = "10px";
+                            toast.style.fontSize = "14px";
+                            toast.style.zIndex = "9999";
+
+                            document.body.appendChild(toast);
+
+                            setTimeout(() => {
+                                toast.remove();
+                            }, 1500);
+                        };
+
+                        chatBox.appendChild(copyBtn);
                     }
-                }
-                            
-                chatBox.appendChild(div);
-
-                if (historyItem.type === "ai" && !historyItem.text.trim().startsWith("http") && !historyItem.text.trim().startsWith("data:image")) {
-                    const copyBtn = document.createElement("div");
-                    copyBtn.className = "copy-btn";
-                    copyBtn.innerHTML = "⧉";
-
-                    copyBtn.onclick = () => {
-                        navigator.clipboard.writeText(historyItem.text);
-
-                        const toast = document.createElement("div");
-                        toast.innerText = "Copiado";
-                        toast.style.position = "fixed";
-                        toast.style.bottom = "100px";
-                        toast.style.left = "50%";
-                        toast.style.transform = "translateX(-50%)";
-                        toast.style.background = "#0f172a";
-                        toast.style.color = "white";
-                        toast.style.padding = "8px 14px";
-                        toast.style.borderRadius = "10px";
-                        toast.style.fontSize = "14px";
-                        toast.style.zIndex = "9999";
-
-                        document.body.appendChild(toast);
-
-                        setTimeout(() => {
-                            toast.remove();
-                        }, 1500);
-                    };
-
-                    chatBox.appendChild(copyBtn);
                 }
 
             });
@@ -2813,7 +2819,7 @@ async function loadChats() {
         }
     }
 
-}
+ }
 
 
 // ===== CONTROL DEL MODAL PERSONALIZADO =====
