@@ -1920,6 +1920,43 @@ How can I help you today?
     </div>
 </div>
 
+<!-- Widget Flotante de Configuración en Inglés (Izquierda) -->
+<div id="video-config-widget">
+    <button id="video-config-btn" type="button">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="21" x2="4" y2="14"></line>
+            <line x1="4" y1="10" x2="4" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12" y2="3"></line>
+            <line x1="20" y1="21" x2="20" y2="16"></line>
+            <line x1="20" y1="12" x2="20" y2="3"></line>
+            <line x1="1" y1="14" x2="7" y2="14"></line>
+            <line x1="9" y1="8" x2="15" y2="8"></line>
+            <line x1="17" y1="16" x2="23" y2="16"></line>
+        </svg>
+        <span>Configure parameters</span>
+    </button>
+
+    <div id="video-config-popover">
+        <div class="config-group">
+            <label>Duration</label>
+            <div class="config-options">
+                <button class="config-chip duration-chip active" data-sec="6">6s</button>
+                <button class="config-chip duration-chip" data-sec="10">10s</button>
+                <button class="config-chip duration-chip" data-sec="14">14s</button>
+            </div>
+        </div>
+
+        <div class="config-group">
+            <label>Quality</label>
+            <div class="config-options">
+                <button class="config-chip quality-chip active" data-qual="720p">720p</button>
+                <button class="config-chip quality-chip" data-qual="1080p">1080p</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="input-area">
     <div class="input-card">
         <button id="attach-plus-btn" type="button" aria-label="Adjuntar">
