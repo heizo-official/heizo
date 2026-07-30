@@ -2447,10 +2447,27 @@ try {
 
 chatBox.scrollTop = chatBox.scrollHeight;
 
-// Detectar si la respuesta es una imagen limpia (Base64 o URL http)
 const cleanReply = fullReply.trim();
+const isVideoUrl = cleanReply.endsWith(".mp4") || cleanReply.includes(".mp4") || isVideoMode;
 
-if (cleanReply.startsWith("data:image") || cleanReply.startsWith("http")) {
+if (isVideoUrl && (cleanReply.startsWith("http") || cleanReply.startsWith("data:video"))) {
+    aiMessage.style.padding = "6px";
+    aiMessage.style.borderRadius = "20px";
+    aiMessage.innerHTML = `
+        <div class="video-card-container">
+            <video src="${cleanReply}" controls autoplay loop muted playsinline></video>
+            <button class="img-download-btn-floating visible" 
+                    title="Descargar vídeo" 
+                    onclick="downloadImage('${cleanReply}', 'video_heizo')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 15V3"/>
+                    <path d="M7 10l5 5 5-5"/>
+                    <path d="M20 21H4"/>
+                </svg>
+            </button>
+        </div>
+    `;
+} else if (cleanReply.startsWith("data:image") || cleanReply.startsWith("http")) {
     aiMessage.style.padding = "6px";
     aiMessage.style.borderRadius = "20px";
     aiMessage.innerHTML = `
