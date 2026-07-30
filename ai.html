@@ -3299,7 +3299,7 @@ document.querySelectorAll('.quality-chip').forEach(chip => {
 const videosNavBtn = document.getElementById("videos-btn");
 
 if (videosNavBtn) {
-    videosNavBtn.addEventListener("click", () => {
+    videosNavBtn.addEventListener("click", async () => {
         closeSidebar();
         isVideoMode = true;
         isImagesMode = false;
@@ -3308,21 +3308,14 @@ if (videosNavBtn) {
         if (imagesSearchBar) imagesSearchBar.style.display = "none";
         if (imageSuggestions) imageSuggestions.style.display = "none";
         
-        // Muestra el widget a la izquierda
         if (videoConfigWidget) videoConfigWidget.style.display = "block";
 
         updateConfigUI();
 
-        chatBox.innerHTML = "";
-        chatHistory = [];
-        currentChatId = null;
-
-        const welcomeMsg = document.createElement("div");
-        welcomeMsg.className = "message ai";
-        welcomeMsg.textContent = "🎬 Videos section activated. Describe the scene you want to generate.";
-        chatBox.appendChild(welcomeMsg);
+        // Carga los vídeos anteriores guardados en Supabase automáticamente
+        await loadOrCreateVideosChat();
     });
-}
+    }
 
 // Ocultar Widget al hacer clic en New Chat o ir a Imágenes
 newChatBtn.addEventListener("click", () => {
