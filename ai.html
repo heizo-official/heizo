@@ -3207,6 +3207,7 @@ const imagesNavBtn = document.getElementById("images-btn");
 if (imagesNavBtn) {
     imagesNavBtn.addEventListener("click", async () => {
         closeSidebar();
+        resetAllModes();
         isImagesMode = true;
 
         if (imagesSearchBtn) imagesSearchBtn.style.display = "flex";
