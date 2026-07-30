@@ -3144,6 +3144,129 @@ newChatBtn.addEventListener("click", () => {
     clearAttachedImage();
 });
 
+
+// ============================================================
+// LÓGICA Y ESTADO DE CONFIGURACIÓN DE VÍDEO (MEMORIA 8 HORAS)
+// ============================================================
+let isVideoMode = false;
+
+// Memoria de 8 horas para Duración y Calidad
+function getSavedVideoConfig() {
+    const savedTime = localStorage.getItem('heizo_video_cfg_timestamp');
+    const savedDuration = localStorage.getItem('heizo_video_duration');
+    const savedQuality = localStorage.getItem('heizo_video_quality');
+    const currentTime = Date.now();
+    const eightHoursInMs = 8 * 60 * 60 * 1000;
+
+    if (savedTime && (currentTime - parseInt(savedTime) < eightHoursInMs)) {
+        return {
+            duration: parseInt(savedDuration || 6),
+            quality: savedQuality || '720p'
+        };
+    } else {
+        // Restablece valores predeterminados tras 8 horas
+        localStorage.setItem('heizo_video_duration', '6');
+        localStorage.setItem('heizo_video_quality', '720p');
+        localStorage.setItem('heizo_video_cfg_timestamp', currentTime.toString());
+        return { duration: 6, quality: '720p' };
+    }
+}
+
+function updateVideoConfig(duration, quality) {
+    const current = getSavedVideoConfig();
+    const newDuration = duration !== undefined ? duration : current.duration;
+    const newQuality = quality !== undefined ? quality : current.quality;
+
+    localStorage.setItem('heizo_video_duration', newDuration.toString());
+    localStorage.setItem('heizo_video_quality', newQuality);
+    localStorage.setItem('heizo_video_cfg_timestamp', Date.now().toString());
+
+    updateConfigUI();
+}
+
+function updateConfigUI() {
+    const config = getSavedVideoConfig();
+
+    document.querySelectorAll('.duration-chip').forEach(chip => {
+        if (parseInt(chip.getAttribute('data-sec')) === config.duration) {
+            chip.classList.add('active');
+        } else {
+            chip.classList.remove('active');
+        }
+    });
+
+    document.querySelectorAll('.quality-chip').forEach(chip => {
+        if (chip.getAttribute('data-qual') === config.quality) {
+            chip.classList.add('active');
+        } else {
+            chip.classList.remove('active');
+        }
+    });
+}
+
+// Toggle Popover
+const videoConfigBtn = document.getElementById("video-config-btn");
+const videoConfigPopover = document.getElementById("video-config-popover");
+const videoConfigWidget = document.getElementById("video-config-widget");
+
+if (videoConfigBtn && videoConfigPopover) {
+    videoConfigBtn.onclick = (e) => {
+        e.stopPropagation();
+        const isVisible = videoConfigPopover.style.display === "flex";
+        videoConfigPopover.style.display = isVisible ? "none" : "flex";
+    };
+
+    document.addEventListener("click", (e) => {
+        if (videoConfigPopover && !videoConfigWidget.contains(e.target)) {
+            videoConfigPopover.style.display = "none";
+        }
+    });
+}
+
+// Listeners de los Chips
+document.querySelectorAll('.duration-chip').forEach(chip => {
+    chip.onclick = () => updateVideoConfig(parseInt(chip.getAttribute('data-sec')), undefined);
+});
+
+document.querySelectorAll('.quality-chip').forEach(chip => {
+    chip.onclick = () => updateVideoConfig(undefined, chip.getAttribute('data-qual'));
+});
+
+// Activar/Desactivar visibilidad del Widget según la Sección
+const videosNavBtn = document.getElementById("videos-btn");
+
+if (videosNavBtn) {
+    videosNavBtn.addEventListener("click", () => {
+        closeSidebar();
+        isVideoMode = true;
+        isImagesMode = false;
+
+        if (imagesSearchBtn) imagesSearchBtn.style.display = "none";
+        if (imagesSearchBar) imagesSearchBar.style.display = "none";
+        if (imageSuggestions) imageSuggestions.style.display = "none";
+        
+        // Muestra el widget a la izquierda
+        if (videoConfigWidget) videoConfigWidget.style.display = "block";
+
+        updateConfigUI();
+
+        chatBox.innerHTML = "";
+        chatHistory = [];
+        currentChatId = null;
+
+        const welcomeMsg = document.createElement("div");
+        welcomeMsg.className = "message ai";
+        welcomeMsg.textContent = "🎬 Videos section activated. Describe the scene you want to generate.";
+        chatBox.appendChild(welcomeMsg);
+    });
+}
+
+// Ocultar Widget al hacer clic en New Chat o ir a Imágenes
+newChatBtn.addEventListener("click", () => {
+    isVideoMode = false;
+    if (videoConfigWidget) videoConfigWidget.style.display = "none";
+});
+
 // 2. Control de Lupa de Búsqueda de la Sección Images
 if (imagesSearchBtn) {
     imagesSearchBtn.onclick = () => {
