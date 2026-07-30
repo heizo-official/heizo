@@ -2876,6 +2876,7 @@ async function loadChats() {
             }
 
             hideContextMenu();
+            resetAllModes();
             currentChatId = chat.id;
 
             const { data: messages, error } = await supabaseClient
