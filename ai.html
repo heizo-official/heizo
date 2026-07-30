@@ -2341,7 +2341,10 @@ body: JSON.stringify({
 message: userText,
 history: chatHistory.slice(-30),
 image: imageToSend || null,
-is_image_mode: isImagesMode
+is_image_mode: isImagesMode,
+is_video_mode: isVideoMode,
+duration: getSavedVideoConfig().duration,
+quality: getSavedVideoConfig().quality
 })
 });
 
