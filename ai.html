@@ -3768,9 +3768,17 @@ async function deleteMediaItem(messageId, elementToRemove, mediaType = "video") 
     showCustomModal();
 }
 
-// ============================================================
-// CÁRGA Y PERISTENCIA AUTOMÁTICA EN LA SECCIÓN DE VÍDEOS
-// ============================================================
+// Función para apagar todos los modos al cambiar de sección o chat
+function resetAllModes() {
+    isVideoMode = false;
+    isImagesMode = false;
+    if (videoConfigWidget) videoConfigWidget.style.display = "none";
+    if (videoConfigPopover) videoConfigPopover.style.display = "none";
+    if (imagesSearchBtn) imagesSearchBtn.style.display = "none";
+    if (imagesSearchBar) imagesSearchBar.style.display = "none";
+    if (imageSuggestions) imageSuggestions.style.display = "none";
+}
+
 let videosChatId = null;
 
 async function loadOrCreateVideosChat() {
@@ -3795,7 +3803,81 @@ async function loadOrCreateVideosChat() {
     }
 
     currentChatId = videosChatId;
-    await loadChats();
+    await loadVideosMessages();
+}
+
+async function loadVideosMessages() {
+    if (!currentChatId) return;
+
+    chatBox.innerHTML = "";
+    chatHistory = [];
+
+    const { data: messages } = await supabaseClient
+        .from("messages")
+        .select("*")
+        .eq("chat_id", currentChatId)
+        .order("created_at", { ascending: true });
+
+    if (messages && messages.length > 0) {
+        messages.forEach(msg => {
+            const historyItem = {
+                type: msg.role === "assistant" ? "ai" : "user",
+                text: msg.content
+            };
+            chatHistory.push(historyItem);
+
+            if (msg.role === "user") {
+                const userDiv = document.createElement("div");
+                userDiv.className = "message";
+                userDiv.style.background = "#ffffff";
+                userDiv.style.marginLeft = "auto";
+                userDiv.style.border = "1px solid #d8dde5";
+                userDiv.style.borderRadius = "18px";
+                userDiv.style.marginRight = "12px";
+                userDiv.textContent = msg.content;
+                chatBox.appendChild(userDiv);
+            } else {
+                const aiDiv = document.createElement("div");
+                aiDiv.className = "message ai";
+                aiDiv.setAttribute("data-message-id", msg.id);
+
+                const cleanText = msg.content ? msg.content.trim() : "";
+                const isVideo = cleanText.endsWith(".mp4") || cleanText.includes(".mp4");
+
+                if (isVideo && (cleanText.startsWith("http") || cleanText.startsWith("data:video"))) {
+                    aiDiv.style.padding = "6px";
+                    aiDiv.style.borderRadius = "20px";
+                    aiDiv.innerHTML = `
+                        <div class="video-card-container media-card-wrapper">
+                            <button class="media-3dots-btn" title="Opciones" onclick="deleteMediaItem('${msg.id}', this, 'video')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="5" r="1"/>
+                                    <circle cx="12" cy="12" r="1"/>
+                                    <circle cx="12" cy="19" r="1"/>
+                                </svg>
+                            </button>
+                            <video src="${cleanText}" controls autoplay loop muted playsinline></video>
+                            <button class="img-download-btn-floating visible" title="Descargar vídeo" onclick="downloadImage('${cleanText}', 'video_heizo')">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 15V3"/><path d="M7 10l5 5 5-5"/><path d="M20 21H4"/>
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    aiDiv.textContent = msg.content;
+                }
+                chatBox.appendChild(aiDiv);
+            }
+        });
+    } else {
+        const welcomeMsg = document.createElement("div");
+        welcomeMsg.className = "message ai";
+        welcomeMsg.textContent = "🎬 Videos section activated. Describe the scene you want to generate.";
+        chatBox.appendChild(welcomeMsg);
+    }
+
+    chatBox.scrollTop = chatBox.scrollHeight;
     }
 
 // ============================================================
