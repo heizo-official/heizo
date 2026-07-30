@@ -2179,6 +2179,9 @@ sidebarOverlay.addEventListener("click", closeSidebar);
 
     newChatBtn.addEventListener("click", async () => {
 
+    resetAllModes();
+    clearAttachedImage();
+
     if (chatHistory.length > 0 && currentChatId) {
 
         await loadChats();
