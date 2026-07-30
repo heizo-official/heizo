@@ -1491,6 +1491,60 @@ padding-right:2px;
     }
 
 
+/* ===== TARJETA DE VÍDEO Y SELECTOR DE DURACIÓN ===== */
+.video-card-container {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #f8fafc;
+    margin-top: 6px;
+    border: 1px solid #e2e8f0;
+}
+
+.video-card-container video {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 18px;
+    outline: none;
+}
+
+/* Selector de Tiempo (Menu pequeño en sección Vídeo) */
+#video-duration-selector {
+    position: fixed;
+    bottom: 75px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none; /* Se activa solo al entrar en la sección Vídeos */
+    align-items: center;
+    gap: 6px;
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    padding: 4px 10px;
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    z-index: 1000;
+}
+
+.duration-chip {
+    border: none;
+    background: transparent;
+    padding: 6px 12px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.duration-chip.active {
+    background: #0f2747;
+    color: #ffffff;
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
