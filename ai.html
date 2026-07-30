@@ -1596,6 +1596,39 @@ padding-right:2px;
 }
 
 
+/* ===== BOTÓN DE 3 PUNTOS EN ESQUINA SUPERIOR DERECHA (MEDIA) ===== */
+.media-card-wrapper {
+    position: relative;
+    width: 100%;
+    display: inline-block;
+}
+
+.media-3dots-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.media-3dots-btn:hover {
+    background: rgba(15, 23, 42, 0.85);
+    transform: scale(1.06);
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
