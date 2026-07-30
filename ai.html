@@ -3726,6 +3726,72 @@ document
 });
 
 // ============================================================
+// FUNCIÓN PARA ELIMINAR UN VÍDEO O IMAGEN ESPECÍFICO (3 PUNTOS)
+// ============================================================
+async function deleteMediaItem(messageId, elementToRemove, mediaType = "video") {
+    modalTitle.textContent = mediaType === "video" ? "Eliminar vídeo" : "Eliminar imagen";
+    modalDesc.textContent = "¿Estás seguro de que deseas eliminar este archivo? Se borrará permanentemente de tu historial.";
+    modalInput.style.display = "none";
+
+    modalConfirmBtn.textContent = "Eliminar";
+    modalConfirmBtn.className = "delete";
+
+    onModalConfirm = async () => {
+        try {
+            if (messageId && messageId !== "" && messageId !== "null" && messageId !== "undefined") {
+                await supabaseClient
+                    .from("messages")
+                    .delete()
+                    .eq("id", messageId);
+            }
+
+            if (elementToRemove) {
+                const messageParent = elementToRemove.closest(".message");
+                if (messageParent) {
+                    messageParent.remove();
+                } else {
+                    elementToRemove.remove();
+                }
+            }
+        } catch (err) {
+            console.error("Error al eliminar archivo:", err);
+        }
+    };
+
+    showCustomModal();
+}
+
+// ============================================================
+// CÁRGA Y PERISTENCIA AUTOMÁTICA EN LA SECCIÓN DE VÍDEOS
+// ============================================================
+let videosChatId = null;
+
+async function loadOrCreateVideosChat() {
+    if (!currentUser) return;
+
+    const { data } = await supabaseClient
+        .from("chats")
+        .select("*")
+        .eq("user_id", currentUser.id)
+        .eq("title", "__VIDEOS_WORKSPACE__")
+        .maybeSingle();
+
+    if (data) {
+        videosChatId = data.id;
+    } else {
+        const { data: newChat } = await supabaseClient
+            .from("chats")
+            .insert({ user_id: currentUser.id, title: "__VIDEOS_WORKSPACE__" })
+            .select()
+            .single();
+        videosChatId = newChat ? newChat.id : null;
+    }
+
+    currentChatId = videosChatId;
+    await loadChats();
+    }
+
+// ============================================================
 // VACIAR SECCIÓN COMPLETA CON PULSACIÓN LARGA EN EL MENÚ
 // ============================================================
 function setupSectionClearLongPress(buttonElement, sectionName, getChatIdFunc) {
