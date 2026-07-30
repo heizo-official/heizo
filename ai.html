@@ -2794,13 +2794,14 @@ document.addEventListener("pointerdown", (e) => {
     }
 });
 
-                        async function loadChats() {
 
+async function loadChats() {
     const { data, error } = await supabaseClient
         .from("chats")
         .select("*")
         .eq("user_id", currentUser.id)
         .neq("title", "__IMAGES_WORKSPACE__")
+        .neq("title", "__VIDEOS_WORKSPACE__")
         .order("updated_at", { ascending: false });
 
     if (error) {
@@ -2812,7 +2813,6 @@ document.addEventListener("pointerdown", (e) => {
     recentChats.innerHTML = "";
 
     data.forEach(chat => {
-
         const item = document.createElement("div");
         item.className = "recent-chat";
         item.textContent = chat.title || "New Chat";
@@ -2829,7 +2829,6 @@ document.addEventListener("pointerdown", (e) => {
             pressTimer = setTimeout(() => {
                 isLongPress = true;
                 selectedChatForCtx = chat;
-                
                 const x = Math.min(startX, window.innerWidth - 200);
                 const y = Math.min(startY, window.innerHeight - 120);
 
@@ -2857,14 +2856,12 @@ document.addEventListener("pointerdown", (e) => {
         item.addEventListener("contextmenu", (e) => e.preventDefault());
 
         item.onclick = async () => {
-
             if (isLongPress) {
                 isLongPress = false;
                 return;
             }
 
             hideContextMenu();
-
             currentChatId = chat.id;
 
             const { data: messages, error } = await supabaseClient
@@ -2882,11 +2879,9 @@ document.addEventListener("pointerdown", (e) => {
             chatBox.innerHTML = "";
 
             messages.forEach(msg => {
-
                 let userTextVal = "";
                 let userImgVal = null;
 
-                // Lectura segura para mensajes de texto plano antiguos o JSON con imagen
                 if (msg.role === "user") {
                     if (typeof msg.content === "string" && msg.content.trim().startsWith("{")) {
                         try {
@@ -2915,9 +2910,7 @@ document.addEventListener("pointerdown", (e) => {
 
                 chatHistory.push(historyItem);
 
-                // 1. RENDERIZAR MENSAJE DEL USUARIO
                 if (historyItem.type === "user") {
-
                     if (historyItem.image) {
                         const userImgDiv = document.createElement("div");
                         userImgDiv.style.marginLeft = "auto";
@@ -2941,29 +2934,51 @@ document.addEventListener("pointerdown", (e) => {
                         userDiv.textContent = historyItem.text;
                         chatBox.appendChild(userDiv);
                     }
-
                 } else {
-                    // 2. RENDERIZAR RESPUESTA DE LA IA
                     const aiDiv = document.createElement("div");
                     aiDiv.className = "message ai";
+                    aiDiv.setAttribute("data-message-id", msg.id);
                     const cleanText = historyItem.text ? historyItem.text.trim() : "";
+                    const isVideo = cleanText.endsWith(".mp4") || cleanText.includes(".mp4");
 
-                    if (cleanText.startsWith("http") || cleanText.startsWith("data:image")) {
+                    if (isVideo && (cleanText.startsWith("http") || cleanText.startsWith("data:video"))) {
                         aiDiv.style.padding = "6px";
                         aiDiv.style.borderRadius = "20px";
                         aiDiv.innerHTML = `
-                            <div class="image-card-container">
-                                <div class="image-skeleton-loader"></div>
-                                <img src="${cleanText}" 
-                                     onload="this.classList.add('loaded'); if(this.previousElementSibling) this.previousElementSibling.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.classList.add('visible');" 
-                                     alt="HEIZO AI Image">
-                                <button class="img-download-btn-floating" 
-                                        title="Descargar imagen" 
-                                        onclick="downloadImage('${cleanText}', 'imagen_heizo')">
+                            <div class="video-card-container media-card-wrapper">
+                                <button class="media-3dots-btn" title="Opciones" onclick="deleteMediaItem('${msg.id}', this, 'video')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="5" r="1"/>
+                                        <circle cx="12" cy="12" r="1"/>
+                                        <circle cx="12" cy="19" r="1"/>
+                                    </svg>
+                                </button>
+                                <video src="${cleanText}" controls autoplay loop muted playsinline></video>
+                                <button class="img-download-btn-floating visible" title="Descargar vídeo" onclick="downloadImage('${cleanText}', 'video_heizo')">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M12 15V3"/>
-                                        <path d="M7 10l5 5 5-5"/>
-                                        <path d="M20 21H4"/>
+                                        <path d="M12 15V3"/><path d="M7 10l5 5 5-5"/><path d="M20 21H4"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        `;
+                        chatBox.appendChild(aiDiv);
+                    } else if (cleanText.startsWith("http") || cleanText.startsWith("data:image")) {
+                        aiDiv.style.padding = "6px";
+                        aiDiv.style.borderRadius = "20px";
+                        aiDiv.innerHTML = `
+                            <div class="image-card-container media-card-wrapper">
+                                <button class="media-3dots-btn" title="Opciones" onclick="deleteMediaItem('${msg.id}', this, 'imagen')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="5" r="1"/>
+                                        <circle cx="12" cy="12" r="1"/>
+                                        <circle cx="12" cy="19" r="1"/>
+                                    </svg>
+                                </button>
+                                <div class="image-skeleton-loader"></div>
+                                <img src="${cleanText}" onload="this.classList.add('loaded'); if(this.previousElementSibling) this.previousElementSibling.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.classList.add('visible');" alt="HEIZO AI Image">
+                                <button class="img-download-btn-floating" title="Descargar imagen" onclick="downloadImage('${cleanText}', 'imagen_heizo')">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 15V3"/><path d="M7 10l5 5 5-5"/><path d="M20 21H4"/>
                                     </svg>
                                 </button>
                             </div>
@@ -2976,10 +2991,8 @@ document.addEventListener("pointerdown", (e) => {
                         const copyBtn = document.createElement("div");
                         copyBtn.className = "copy-btn";
                         copyBtn.innerHTML = "⧉";
-
                         copyBtn.onclick = () => {
                             navigator.clipboard.writeText(historyItem.text);
-
                             const toast = document.createElement("div");
                             toast.innerText = "Copiado";
                             toast.style.position = "fixed";
@@ -2992,25 +3005,18 @@ document.addEventListener("pointerdown", (e) => {
                             toast.style.borderRadius = "10px";
                             toast.style.fontSize = "14px";
                             toast.style.zIndex = "9999";
-
                             document.body.appendChild(toast);
-
-                            setTimeout(() => {
-                                toast.remove();
-                            }, 1500);
+                            setTimeout(() => toast.remove(), 1500);
                         };
-
                         chatBox.appendChild(copyBtn);
                     }
                 }
-
             });
 
             closeSidebar();
         };
 
         recentChats.appendChild(item);
-
     });
 
     if (data && data.length > 0 && !currentChatId) {
@@ -3018,8 +3024,7 @@ document.addEventListener("pointerdown", (e) => {
             recentChats.children[0].click();
         }
     }
-
- }
+}
 
 
 // ===== CONTROL DEL MODAL PERSONALIZADO =====
