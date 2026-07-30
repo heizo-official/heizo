@@ -3720,6 +3720,62 @@ document
 
 });
 
+// ============================================================
+// VACIAR SECCIÓN COMPLETA CON PULSACIÓN LARGA EN EL MENÚ
+// ============================================================
+function setupSectionClearLongPress(buttonElement, sectionName, getChatIdFunc) {
+    let timer = null;
+
+    const startPress = () => {
+        timer = setTimeout(() => {
+            const sectionChatId = getChatIdFunc();
+            if (!sectionChatId) return;
+
+            modalTitle.textContent = `Vaciar sección de ${sectionName}`;
+            modalDesc.textContent = `¿Deseas eliminar todos los elementos e historial dentro de ${sectionName}? La sección permanecerá activa y limpia.`;
+            modalInput.style.display = "none";
+
+            modalConfirmBtn.textContent = "Vaciar todo";
+            modalConfirmBtn.className = "delete";
+
+            onModalConfirm = async () => {
+                await supabaseClient
+                    .from("messages")
+                    .delete()
+                    .eq("chat_id", sectionChatId);
+
+                chatBox.innerHTML = "";
+                chatHistory = [];
+
+                const resetMsg = document.createElement("div");
+                resetMsg.className = "message ai";
+                resetMsg.textContent = `✨ Sección de ${sectionName} vaciada correctamente.`;
+                chatBox.appendChild(resetMsg);
+            };
+
+            showCustomModal();
+            if (navigator.vibrate) navigator.vibrate(50);
+        }, 700); // 700 milisegundos de presión para activar
+    };
+
+    const cancelPress = () => clearTimeout(timer);
+
+    buttonElement.addEventListener("touchstart", startPress, { passive: true });
+    buttonElement.addEventListener("touchend", cancelPress);
+    buttonElement.addEventListener("touchmove", cancelPress);
+    buttonElement.addEventListener("mousedown", startPress);
+    buttonElement.addEventListener("mouseup", cancelPress);
+    buttonElement.addEventListener("mouseleave", cancelPress);
+}
+
+// Configurar los botones laterales
+if (imagesNavBtn) {
+    setupSectionClearLongPress(imagesNavBtn, "Imágenes", () => imagesChatId);
+}
+if (videosNavBtn) {
+    setupSectionClearLongPress(videosNavBtn, "Vídeos", () => currentChatId);
+}
+
 </script>    
 </body>
 </html>
