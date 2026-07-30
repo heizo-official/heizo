@@ -1490,65 +1490,77 @@ padding-right:2px;
     visibility: visible;
     }
 
-
-/* ===== COMPACT PREMIUM VIDEO CONFIG WIDGET (LEFT SIDE) ===== */
+/* ===== BOTÓN Y MENÚ PREMIUM DE CONFIGURAR VIDEO (SUPERIOR DERECHA) ===== */
 #video-config-widget {
     position: fixed;
-    bottom: 75px;
-    left: 16px;
-    z-index: 1000;
-    display: none; /* Solo visible en la sección de Vídeo */
+    top: 70px;
+    right: 70px;
+    z-index: 99999;
+    display: none; /* Se activa exclusivamente en la sección de Vídeo */
+}
+
+/* Borde animado con haz de luz en movimiento */
+.video-config-border-wrapper {
+    position: relative;
+    border-radius: 16px;
+    padding: 2px;
+    background: linear-gradient(115deg, #38bdf8 0%, #f472b6 45%, #0284c7 70%, #38bdf8 100%);
+    background-size: 300% 300%;
+    animation: videoBorderGlow 3.5s ease infinite;
+    box-shadow: 0 4px 16px rgba(56, 189, 248, 0.25);
+}
+
+@keyframes videoBorderGlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 #video-config-btn {
     display: flex;
     align-items: center;
-    gap: 6px;
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid #e2e8f0;
-    padding: 6px 12px;
-    border-radius: 18px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-    font-size: 12px;
+    gap: 7px;
+    background: #ffffff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 14px;
+    font-size: 13px;
     font-weight: 600;
-    color: #1a1f2b;
+    color: #0f2747;
     cursor: pointer;
-    transition: all 0.2s ease;
     user-select: none;
+    transition: transform 0.15s ease;
 }
 
-#video-config-btn:hover {
-    background: #ffffff;
-    border-color: #cbd5e1;
-    transform: translateY(-1px);
+#video-config-btn:active {
+    transform: scale(0.96);
 }
 
 #video-config-btn svg {
-    color: #0f2747;
+    color: #0284c7;
     flex-shrink: 0;
 }
 
+/* Popover desplegable flotante */
 #video-config-popover {
     position: absolute;
-    bottom: 42px;
-    left: 0;
-    width: 210px;
+    top: 54px;
+    right: 0;
+    width: 215px;
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 20px;
     padding: 14px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.14);
     display: none;
     flex-direction: column;
     gap: 12px;
-    z-index: 1001;
+    z-index: 100000;
     animation: popoverFadeIn 0.2s ease;
 }
 
 @keyframes popoverFadeIn {
-    from { opacity: 0; transform: translateY(6px); }
+    from { opacity: 0; transform: translateY(-6px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
