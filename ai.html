@@ -1491,59 +1491,110 @@ padding-right:2px;
     }
 
 
-/* ===== TARJETA DE VÍDEO Y SELECTOR DE DURACIÓN ===== */
-.video-card-container {
-    position: relative;
-    width: 100%;
-    max-width: 100%;
-    border-radius: 20px;
-    overflow: hidden;
-    background: #f8fafc;
-    margin-top: 6px;
-    border: 1px solid #e2e8f0;
-}
-
-.video-card-container video {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 18px;
-    outline: none;
-}
-
-/* Selector de Tiempo (Menu pequeño en sección Vídeo) */
-#video-duration-selector {
+/* ===== COMPACT PREMIUM VIDEO CONFIG WIDGET (LEFT SIDE) ===== */
+#video-config-widget {
     position: fixed;
     bottom: 75px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: none; /* Se activa solo al entrar en la sección Vídeos */
+    left: 16px;
+    z-index: 1000;
+    display: none; /* Solo visible en la sección de Vídeo */
+}
+
+#video-config-btn {
+    display: flex;
     align-items: center;
     gap: 6px;
-    background: #ffffff;
-    border: 1.5px solid #e2e8f0;
-    padding: 4px 10px;
-    border-radius: 20px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    z-index: 1000;
-}
-
-.duration-chip {
-    border: none;
-    background: transparent;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid #e2e8f0;
     padding: 6px 12px;
-    border-radius: 14px;
-    font-size: 13px;
+    border-radius: 18px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    font-size: 12px;
     font-weight: 600;
-    color: #6b7280;
+    color: #1a1f2b;
     cursor: pointer;
     transition: all 0.2s ease;
+    user-select: none;
 }
 
-.duration-chip.active {
+#video-config-btn:hover {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+}
+
+#video-config-btn svg {
+    color: #0f2747;
+    flex-shrink: 0;
+}
+
+#video-config-popover {
+    position: absolute;
+    bottom: 42px;
+    left: 0;
+    width: 210px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 14px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 1001;
+    animation: popoverFadeIn 0.2s ease;
+}
+
+@keyframes popoverFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.config-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+}
+
+.config-group label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.config-options {
+    display: flex;
+    gap: 4px;
+    background: #f1f5f9;
+    padding: 3px;
+    border-radius: 12px;
+}
+
+.config-chip {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 5px 0;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: inherit;
+}
+
+.config-chip.active {
     background: #0f2747;
     color: #ffffff;
+    box-shadow: 0 2px 6px rgba(15, 39, 71, 0.2);
 }
+
 
 </style>
 
