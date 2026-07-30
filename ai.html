@@ -3320,21 +3320,15 @@ const videosNavBtn = document.getElementById("videos-btn");
 if (videosNavBtn) {
     videosNavBtn.addEventListener("click", async () => {
         closeSidebar();
+        resetAllModes();
         isVideoMode = true;
-        isImagesMode = false;
 
-        if (imagesSearchBtn) imagesSearchBtn.style.display = "none";
-        if (imagesSearchBar) imagesSearchBar.style.display = "none";
-        if (imageSuggestions) imageSuggestions.style.display = "none";
-        
         if (videoConfigWidget) videoConfigWidget.style.display = "block";
-
         updateConfigUI();
 
-        // Carga los vídeos anteriores guardados en Supabase automáticamente
         await loadOrCreateVideosChat();
     });
-    }
+}
 
 // Ocultar Widget al hacer clic en New Chat o ir a Imágenes
 newChatBtn.addEventListener("click", () => {
