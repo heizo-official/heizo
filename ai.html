@@ -3436,7 +3436,7 @@ if (videosNavBtn) {
         isVideoMode = true;
 
         if (videoConfigWidget) videoConfigWidget.style.display = "block";
-        updateConfigUI();
+        renderVideoConfigForPlan();
 
         await loadOrCreateVideosChat();
     });
