@@ -2742,37 +2742,28 @@ if (avatar) {
 
 }
 
-    const currentPlan = "Standard";
+        // Leer el plan dinámico guardado en las pruebas (por defecto Free)
+    const currentPlan = localStorage.getItem('heizo_test_plan') || "Free";
 
     document.getElementById("account-plan").textContent = currentPlan;
 
-    const upgradeBtn =
-        document.getElementById("upgrade-plan-btn");
+    const upgradeBtn = document.getElementById("upgrade-plan-btn");
 
-    if (currentPlan === "Free") {
+    if (upgradeBtn) {
+        upgradeBtn.disabled = false;
 
-        upgradeBtn.textContent =
-            "Upgrade to Standard";
-
-    } else if (currentPlan === "Standard") {
-
-        upgradeBtn.textContent =
-            "Upgrade to Premium";
-
-    } else if (currentPlan === "Premium") {
-
-        upgradeBtn.textContent =
-            "Upgrade to Pro";
-
-    } else {
-
-        upgradeBtn.textContent =
-            "Current Plan: Pro";
-
-        upgradeBtn.disabled = true;
+        if (currentPlan === "Free") {
+            upgradeBtn.textContent = "Upgrade to Standard";
+        } else if (currentPlan === "Standard") {
+            upgradeBtn.textContent = "Upgrade to Plus";
+        } else if (currentPlan === "Plus") {
+            upgradeBtn.textContent = "Upgrade to Premium";
+        } else if (currentPlan === "Premium") {
+            upgradeBtn.textContent = "Current Plan: Premium";
+            upgradeBtn.disabled = true;
+        }
     }
 }
-
 
 
 async function createChat(title = "New Chat") {
