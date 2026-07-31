@@ -3228,13 +3228,100 @@ newChatBtn.addEventListener("click", () => {
     clearAttachedImage();
 });
 
-
 // ============================================================
-// LÓGICA Y ESTADO DE CONFIGURACIÓN DE VÍDEO (MEMORIA 8 HORAS)
+// LÓGICA Y ESTADO DE CONFIGURACIÓN DE VÍDEO (MENÚ ADAPTATIVO POR PLAN)
 // ============================================================
 let isVideoMode = false;
 
-// Memoria de 8 horas para Duración y Calidad
+// Matriz de reglas por suscripción
+const PLAN_VIDEO_CONFIGS = {
+    Free: {
+        durations: [
+            { sec: 3, label: "3s", isDefault: true, locked: false }
+        ],
+        qualities: [
+            { qual: "480p", label: "480p", isDefault: true, locked: false },
+            { qual: "720p", label: "720p", isDefault: false, locked: true }
+        ]
+    },
+    Standard: {
+        durations: [
+            { sec: 5, label: "5s", isDefault: true, locked: false },
+            { sec: 6, label: "6s", isDefault: false, locked: true },
+            { sec: 10, label: "10s", isDefault: false, locked: true },
+            { sec: 12, label: "12s", isDefault: false, locked: true }
+        ],
+        qualities: [
+            { qual: "480p", label: "480p", isDefault: true, locked: false },
+            { qual: "720p", label: "720p", isDefault: false, locked: false },
+            { qual: "1080p", label: "1080p", isDefault: false, locked: true }
+        ]
+    },
+    Plus: {
+        durations: [
+            { sec: 5, label: "5s", isDefault: true, locked: false },
+            { sec: 6, label: "6s", isDefault: false, locked: false },
+            { sec: 10, label: "10s", isDefault: false, locked: false },
+            { sec: 14, label: "14s", isDefault: false, locked: true }
+        ],
+        qualities: [
+            { qual: "480p", label: "480p", isDefault: false, locked: false },
+            { qual: "720p", label: "720p", isDefault: true, locked: false },
+            { qual: "1080p", label: "1080p", isDefault: false, locked: false },
+            { qual: "4K", label: "4K", isDefault: false, locked: true }
+        ]
+    },
+    Premium: {
+        durations: [
+            { sec: 6, label: "6s", isDefault: true, locked: false },
+            { sec: 10, label: "10s", isDefault: false, locked: false },
+            { sec: 14, label: "14s", isDefault: false, locked: false }
+        ],
+        qualities: [
+            { qual: "720p", label: "720p", isDefault: true, locked: false },
+            { qual: "1080p", label: "1080p", isDefault: false, locked: false },
+            { qual: "4K", label: "4K", isDefault: false, locked: true }
+        ]
+    }
+};
+
+// Obtiene el plan actual o cae en 'Free' por defecto durante pruebas
+function getCurrentUserPlan() {
+    const planEl = document.getElementById("account-plan");
+    const planText = planEl ? planEl.textContent.trim() : "Free";
+    return PLAN_VIDEO_CONFIGS[planText] ? planText : "Free";
+}
+
+// Muestra aviso flash temporal de compra de créditos
+function showFlashToast(message) {
+    const existing = document.getElementById("flash-toast-notice");
+    if (existing) existing.remove();
+
+    const toast = document.createElement("div");
+    toast.id = "flash-toast-notice";
+    toast.innerText = message;
+    toast.style.position = "fixed";
+    toast.style.top = "125px";
+    toast.style.right = "16px";
+    toast.style.background = "#0f172a";
+    toast.style.color = "#ffffff";
+    toast.style.padding = "9px 15px";
+    toast.style.borderRadius = "12px";
+    toast.style.fontSize = "13px";
+    toast.style.fontWeight = "500";
+    toast.style.boxShadow = "0 8px 24px rgba(0,0,0,0.18)";
+    toast.style.zIndex = "100001";
+    toast.style.transition = "opacity 0.25s ease";
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 250);
+    }, 2000);
+}
+
+// Memoria de 8 horas para Duración y Calidad elegida
 function getSavedVideoConfig() {
     const savedTime = localStorage.getItem('heizo_video_cfg_timestamp');
     const savedDuration = localStorage.getItem('heizo_video_duration');
@@ -3244,51 +3331,80 @@ function getSavedVideoConfig() {
 
     if (savedTime && (currentTime - parseInt(savedTime) < eightHoursInMs)) {
         return {
-            duration: parseInt(savedDuration || 6),
-            quality: savedQuality || '720p'
+            duration: parseInt(savedDuration),
+            quality: savedQuality
         };
-    } else {
-        // Restablece valores predeterminados tras 8 horas
-        localStorage.setItem('heizo_video_duration', '6');
-        localStorage.setItem('heizo_video_quality', '720p');
-        localStorage.setItem('heizo_video_cfg_timestamp', currentTime.toString());
-        return { duration: 6, quality: '720p' };
     }
+    return null;
 }
 
-function updateVideoConfig(duration, quality) {
-    const current = getSavedVideoConfig();
-    const newDuration = duration !== undefined ? duration : current.duration;
-    const newQuality = quality !== undefined ? quality : current.quality;
-
-    localStorage.setItem('heizo_video_duration', newDuration.toString());
-    localStorage.setItem('heizo_video_quality', newQuality);
+function saveVideoSelection(duration, quality) {
+    if (duration !== undefined) localStorage.setItem('heizo_video_duration', duration.toString());
+    if (quality !== undefined) localStorage.setItem('heizo_video_quality', quality);
     localStorage.setItem('heizo_video_cfg_timestamp', Date.now().toString());
-
-    updateConfigUI();
 }
 
-function updateConfigUI() {
-    const config = getSavedVideoConfig();
+// Renderiza dinámicamente las fichas según la suscripción
+function renderVideoConfigForPlan() {
+    const currentPlan = getCurrentUserPlan();
+    const config = PLAN_VIDEO_CONFIGS[currentPlan];
+    const saved = getSavedVideoConfig();
 
-    document.querySelectorAll('.duration-chip').forEach(chip => {
-        if (parseInt(chip.getAttribute('data-sec')) === config.duration) {
-            chip.classList.add('active');
-        } else {
-            chip.classList.remove('active');
-        }
+    const durationContainer = document.getElementById("duration-options-container");
+    const qualityContainer = document.getElementById("quality-options-container");
+
+    if (!durationContainer || !qualityContainer) return;
+
+    durationContainer.innerHTML = "";
+    qualityContainer.innerHTML = "";
+
+    // Determinar valores seleccionados (memoria o por defecto del plan)
+    let selectedDuration = saved && saved.duration ? saved.duration : (config.durations.find(d => d.isDefault) || config.durations[0]).sec;
+    let selectedQuality = saved && saved.quality ? saved.quality : (config.qualities.find(q => q.isDefault) || config.qualities[0]).qual;
+
+    // Renderizar Duraciones
+    config.durations.forEach(item => {
+        const btn = document.createElement("button");
+        btn.className = `config-chip duration-chip ${item.sec === selectedDuration ? 'active' : ''} ${item.locked ? 'locked' : ''}`;
+        btn.textContent = item.label;
+
+        btn.onclick = () => {
+            if (item.locked) {
+                showFlashToast("Para usar esta opción, compra créditos.");
+                return;
+            }
+            document.querySelectorAll(".duration-chip").forEach(c => c.classList.remove("active"));
+            btn.classList.add("active");
+            saveVideoSelection(item.sec, undefined);
+        };
+
+        durationContainer.appendChild(btn);
     });
 
-    document.querySelectorAll('.quality-chip').forEach(chip => {
-        if (chip.getAttribute('data-qual') === config.quality) {
-            chip.classList.add('active');
-        } else {
-            chip.classList.remove('active');
-        }
+    // Renderizar Calidades
+    config.qualities.forEach(item => {
+        const btn = document.createElement("button");
+        btn.className = `config-chip quality-chip ${item.qual === selectedQuality ? 'active' : ''} ${item.locked ? 'locked' : ''}`;
+        btn.textContent = item.label;
+
+        btn.onclick = () => {
+            if (item.locked) {
+                showFlashToast("Para usar esta opción, compra créditos.");
+                return;
+            }
+            document.querySelectorAll(".quality-chip").forEach(c => c.classList.remove("active"));
+            btn.classList.add("active");
+            saveVideoSelection(undefined, item.qual);
+        };
+
+        qualityContainer.appendChild(btn);
     });
+
+    // Guardar selección activa inicial
+    saveVideoSelection(selectedDuration, selectedQuality);
 }
 
-// Toggle Popover
+// Toggle del Popover
 const videoConfigBtn = document.getElementById("video-config-btn");
 const videoConfigPopover = document.getElementById("video-config-popover");
 const videoConfigWidget = document.getElementById("video-config-widget");
@@ -3297,24 +3413,18 @@ if (videoConfigBtn && videoConfigPopover) {
     videoConfigBtn.onclick = (e) => {
         e.stopPropagation();
         const isVisible = videoConfigPopover.style.display === "flex";
+        if (!isVisible) {
+            renderVideoConfigForPlan(); // Renderiza según la cuenta actual
+        }
         videoConfigPopover.style.display = isVisible ? "none" : "flex";
     };
 
     document.addEventListener("click", (e) => {
-        if (videoConfigPopover && !videoConfigWidget.contains(e.target)) {
+        if (videoConfigPopover && videoConfigWidget && !videoConfigWidget.contains(e.target)) {
             videoConfigPopover.style.display = "none";
         }
     });
-}
-
-// Listeners de los Chips
-document.querySelectorAll('.duration-chip').forEach(chip => {
-    chip.onclick = () => updateVideoConfig(parseInt(chip.getAttribute('data-sec')), undefined);
-});
-
-document.querySelectorAll('.quality-chip').forEach(chip => {
-    chip.onclick = () => updateVideoConfig(undefined, chip.getAttribute('data-qual'));
-});
+        }
 
 // Activar/Desactivar visibilidad del Widget según la Sección
 const videosNavBtn = document.getElementById("videos-btn");
