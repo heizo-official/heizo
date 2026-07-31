@@ -1751,19 +1751,23 @@ console.log("window.supabase =", window.supabase);
 
     </div>
 
-    <div class="account-card">
-
-        <div class="account-row">
-            <span>Current Plan</span>
-            <strong id="account-plan">
-                Free
-            </strong>
+        <div class="account-card">
+        <div class="account-row" style="margin-bottom: 12px;">
+            <span>Current Plan:</span>
+            <strong id="account-plan" style="color:#2080ff; font-size:16px;">Free</strong>
         </div>
-
+        
+        <!-- SELECTOR DE PRUEBAS RÁPIDAS -->
+        <div style="display:flex; gap:6px; margin-top:10px;">
+            <button class="plan-test-btn" onclick="setTestPlan('Free')" style="flex:1; padding:8px; border-radius:10px; border:1px solid #cbd5e1; background:#fff; font-size:12px; font-weight:600; cursor:pointer;">Free</button>
+            <button class="plan-test-btn" onclick="setTestPlan('Standard')" style="flex:1; padding:8px; border-radius:10px; border:1px solid #cbd5e1; background:#fff; font-size:12px; font-weight:600; cursor:pointer;">Standard</button>
+            <button class="plan-test-btn" onclick="setTestPlan('Plus')" style="flex:1; padding:8px; border-radius:10px; border:1px solid #cbd5e1; background:#fff; font-size:12px; font-weight:600; cursor:pointer;">Plus</button>
+            <button class="plan-test-btn" onclick="setTestPlan('Premium')" style="flex:1; padding:8px; border-radius:10px; border:1px solid #cbd5e1; background:#fff; font-size:12px; font-weight:600; cursor:pointer;">Premium</button>
+        </div>
     </div>
 
     <button id="upgrade-plan-btn">
-        Upgrade to Standard
+        Upgrade Subscription
     </button>
 
     <button id="edit-profile-btn">
