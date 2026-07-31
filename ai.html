@@ -2419,8 +2419,9 @@ history: chatHistory.slice(-30),
 image: imageToSend || null,
 is_image_mode: isImagesMode,
 is_video_mode: isVideoMode,
-duration: getSavedVideoConfig().duration,
-quality: getSavedVideoConfig().quality
+duration: getSavedVideoConfig() ? getSavedVideoConfig().duration : 3,
+quality: getSavedVideoConfig() ? getSavedVideoConfig().quality : "480p",
+plan: localStorage.getItem('heizo_test_plan') || "Free"
 })
 });
 
