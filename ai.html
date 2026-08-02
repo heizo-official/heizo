@@ -4155,6 +4155,70 @@ document
     document.body.style.overflow = "hidden";
 });
 
+// ABRIR Y CERRAR PANTALLA DE SUSCRIPCIONES Y CRÉDITOS
+function openSubscriptionScreen() {
+    const accountMenu = document.getElementById("account-menu");
+    const accountScreen = document.getElementById("account-screen");
+    const subScreen = document.getElementById("subscription-screen");
+
+    if (accountMenu) accountMenu.style.display = "none";
+    if (accountScreen) accountScreen.style.display = "none";
+    if (subScreen) subScreen.style.display = "block";
+
+    document.body.style.overflow = "hidden";
+}
+
+function closeSubscriptionScreen() {
+    const subScreen = document.getElementById("subscription-screen");
+    if (subScreen) subScreen.style.display = "none";
+    document.body.style.overflow = "auto";
+}
+
+// CONECTAR SECCIÓN "SUBSCRIPTION" DEL MENÚ DE CUENTA
+const accountSubMenuItem = document.querySelector("#account-menu div:nth-child(2)");
+if (accountSubMenuItem) {
+    accountSubMenuItem.onclick = () => {
+        openSubscriptionScreen();
+    };
+}
+
+const upgradePlanBtn = document.getElementById("upgrade-plan-btn");
+if (upgradePlanBtn) {
+    upgradePlanBtn.onclick = () => {
+        openSubscriptionScreen();
+    };
+}
+
+// SINCRONIZAR CRÉDITOS DEL USUARIO
+function updateUserCreditsDisplay(credits) {
+    const display = document.getElementById("user-credits-display");
+    if (display) {
+        display.textContent = `${credits} Créditos`;
+    }
+    localStorage.setItem("heizo_user_credits", credits);
+}
+
+// PROCESAR COMPRA Y PAGOS REALES
+async function processPayment(itemType, itemId, priceUSD) {
+    if (!currentUser) {
+        alert("Inicia sesión para realizar una compra.");
+        return;
+    }
+
+    try {
+        showFlashToast("Iniciando pasarela de pago...");
+
+        // Redirección o integración de Checkout (Ej: Stripe / MercadoPago Endpoint)
+        const checkoutUrl = `https://checkout.heizo.xyz/pay?user_id=${currentUser.id}&type=${itemType}&item=${itemId}&price=${priceUSD}`;
+        
+        window.location.href = checkoutUrl;
+
+    } catch (err) {
+        console.error("Error al iniciar pago:", err);
+        alert("Ocurrió un error al procesar la solicitud de pago.");
+    }
+    }
+
 document
 .getElementById("logout-btn")
 .addEventListener("click", async () => {
