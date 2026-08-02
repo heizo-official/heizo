@@ -2007,6 +2007,68 @@ console.log("window.supabase =", window.supabase);
 
 </div>
 
+<!-- PANTALLA INDEPENDIENTE DE SUSCRIPCIONES Y CRÉDITOS -->
+<div id="subscription-screen">
+    <div id="account-back-btn" onclick="closeSubscriptionScreen()">❮</div>
+
+    <div class="sub-header-title">Elige tu plan</div>
+
+    <!-- TABLETAS DE SUSCRIPCIÓN (ESTILO CHATGPT CON BORDE LUMINOSO AZUL) -->
+    <div class="plan-card-wrapper">
+        <div class="plan-card">
+            <h3>Plus</h3>
+            <div class="plan-desc">Mayor acceso a inteligencia avanzada y creación rápida.</div>
+            <div class="plan-price">$20 USD / mes</div>
+            <button class="plan-card-btn" onclick="processPayment('subscription', 'plus', 20)">Obtener Plus</button>
+            <ul class="plan-features">
+                <li>✓ Acceso a modelos avanzados</li>
+                <li>✓ Creación de imágenes ultrarrápida</li>
+                <li>✓ 60 Créditos de vídeo incluidos al mes</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="plan-card-wrapper">
+        <div class="plan-card">
+            <h3>Premium</h3>
+            <div class="plan-desc">Rendimiento máximo y vídeo 1080p profesional sin restricciones.</div>
+            <div class="plan-price">$50 USD / mes</div>
+            <button class="plan-card-btn" onclick="processPayment('subscription', 'premium', 50)">Obtener Premium</button>
+            <ul class="plan-features">
+                <li>✓ Todo lo incluido en Plus</li>
+                <li>✓ Motor de vídeo LTX-2.3 Fast Premium 1080p</li>
+                <li>✓ 200 Créditos de vídeo incluidos al mes</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- TIENDA DE CRÉDITOS (ESTILO DRAMABOX BLANCO Y DORADO) -->
+    <div class="credits-shop-section">
+        <div class="credits-shop-title">
+            <span style="color:#f59e0b;">⚡</span> Recargar Créditos de Vídeo
+        </div>
+        <div class="credits-grid">
+            <div class="credit-card-gold" onclick="processPayment('credits', 'pack_60', 4.99)">
+                <span class="gold-badge">10 Vídeos (6s)</span>
+                <div class="amount">60 Créditos</div>
+                <div class="price">$4.99 USD</div>
+            </div>
+
+            <div class="credit-card-gold" onclick="processPayment('credits', 'pack_180', 14.99)">
+                <span class="gold-badge">30 Vídeos (6s)</span>
+                <div class="amount">180 Créditos</div>
+                <div class="price">$14.99 USD</div>
+            </div>
+
+            <div class="credit-card-gold" onclick="processPayment('credits', 'pack_450', 35.99)">
+                <span class="gold-badge">75 Vídeos (6s)</span>
+                <div class="amount">450 Créditos</div>
+                <div class="price">$35.99 USD</div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="chat-screen" style="display:block; padding-top:120px;">
 
 <div id="images-search-btn">⌕</div>
