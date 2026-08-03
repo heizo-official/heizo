@@ -2485,27 +2485,44 @@ const sidebarOverlay =
 document.getElementById("sidebar-overlay");
 
 function openSidebar(){
-
     sidebar.classList.add("open");
-
     sidebarOverlay.classList.add("show");
-
+    document.body.classList.add("sidebar-active"); // Oculta botones superiores
     menuBtn.style.display = "none";
-
     document.body.style.overflow = "hidden";
-
 }
 
 function closeSidebar(){
-
     sidebar.classList.remove("open");
-
     sidebarOverlay.classList.remove("show");
-
+    document.body.classList.remove("sidebar-active"); // Muestra botones superiores
     menuBtn.style.display = "flex";
-
     document.body.style.overflow = "auto";
+}
 
+// GESTOS DE DESLIZAR (SWIPE) PARA ABRIR Y CERRAR EL SIDEBAR
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+}, { passive: true });
+
+document.addEventListener('touchend', e => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipeGesture();
+}, { passive: true });
+
+function handleSwipeGesture() {
+    const swipeDistance = touchEndX - touchStartX;
+    // Deslizar de izquierda a derecha abre si se inicia cerca del borde izquierdo
+    if (swipeDistance > 70 && touchStartX < 50 && !sidebar.classList.contains("open")) {
+        openSidebar();
+    }
+    // Deslizar de derecha a izquierda cierra
+    else if (swipeDistance < -70 && sidebar.classList.contains("open")) {
+        closeSidebar();
+    }
 }
 
 menuBtn.addEventListener("click", openSidebar);
