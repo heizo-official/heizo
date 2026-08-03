@@ -4197,14 +4197,17 @@ document
     document.body.style.overflow = "hidden";
 });
 
-// ABRIR Y CERRAR PANTALLA DE SUSCRIPCIONES Y CRÉDITOS
+// CONTROL DE NAVEGACIÓN ENTRE VISTAS
 function openSubscriptionScreen() {
+    closeCreditsScreen();
     const accountMenu = document.getElementById("account-menu");
     const accountScreen = document.getElementById("account-screen");
     const subScreen = document.getElementById("subscription-screen");
 
     if (accountMenu) accountMenu.style.display = "none";
     if (accountScreen) accountScreen.style.display = "none";
+    
+    renderSubscriptionCards();
     if (subScreen) subScreen.style.display = "block";
 
     document.body.style.overflow = "hidden";
@@ -4216,31 +4219,134 @@ function closeSubscriptionScreen() {
     document.body.style.overflow = "auto";
 }
 
-// CONECTAR SECCIÓN "SUBSCRIPTION" DEL MENÚ DE CUENTA
+function openCreditsScreen() {
+    closeSubscriptionScreen();
+    const accountMenu = document.getElementById("account-menu");
+    const accountScreen = document.getElementById("account-screen");
+    const creditsScreen = document.getElementById("credits-screen");
+
+    if (accountMenu) accountMenu.style.display = "none";
+    if (accountScreen) accountScreen.style.display = "none";
+    if (creditsScreen) creditsScreen.style.display = "block";
+
+    document.body.style.overflow = "hidden";
+}
+
+function closeCreditsScreen() {
+    const creditsScreen = document.getElementById("credits-screen");
+    if (creditsScreen) creditsScreen.style.display = "none";
+    document.body.style.overflow = "auto";
+}
+
+// JERARQUÍA Y RENDERIZADO DINÁMICO DE SUSCRIPCIONES (ESTILO CHATGPT)
+function renderSubscriptionCards() {
+    const currentPlan = (localStorage.getItem('heizo_test_plan') || "Free").toLowerCase();
+    const container = document.getElementById("subscription-cards-container");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    const allPlans = [
+        {
+            key: "standard",
+            name: "Standard",
+            price: "$10 USD / mes",
+            desc: "Ideal para creadores y exploradores de contenido diario.",
+            features: [
+                "✓ Acceso extendido a modelos de chat e imágenes",
+                "✓ Edición de imágenes y eliminación de fondo",
+                "✓ 30 Créditos de vídeo al mes"
+            ]
+        },
+        {
+            key: "plus",
+            name: "Plus",
+            price: "$20 USD / mes",
+            desc: "Mayor velocidad, modelos avanzados y mayor potencia.",
+            features: [
+                "✓ Todo lo incluido en Standard",
+                "✓ Generación ultrarrápida Nano Banana",
+                "✓ 60 Créditos de vídeo al mes"
+            ]
+        },
+        {
+            key: "premium",
+            name: "Premium",
+            price: "$50 USD / mes",
+            desc: "Rendimiento máximo sin límites y motor LTX-2.3 1080p.",
+            features: [
+                "✓ Todo lo incluido en Plus",
+                "✓ Vídeo 1080p fotorrealista LTX-2.3 Fast",
+                "✓ 200 Créditos de vídeo al mes"
+            ]
+        }
+    ];
+
+    let plansToShow = [];
+
+    if (currentPlan === "free") {
+        plansToShow = allPlans;
+    } else if (currentPlan === "standard") {
+        plansToShow = allPlans.filter(p => p.key === "plus" || p.key === "premium");
+    } else if (currentPlan === "plus") {
+        plansToShow = allPlans.filter(p => p.key === "premium");
+    } else if (currentPlan === "premium") {
+        plansToShow = [];
+    }
+
+    // Mostrar primero las opciones superiores para mejorar
+    plansToShow.forEach(plan => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "plan-card-wrapper";
+        wrapper.innerHTML = `
+            <div class="plan-card">
+                <h3>${plan.name}</h3>
+                <div class="plan-desc">${plan.desc}</div>
+                <div class="plan-price">${plan.price}</div>
+                <button class="plan-card-btn" onclick="processPayment('subscription', '${plan.key}', ${plan.key === 'standard' ? 10 : plan.key === 'plus' ? 20 : 50})">
+                    Cambiar a ${plan.name}
+                </button>
+                <ul class="plan-features">
+                    ${plan.features.map(f => `<li>${f}</li>`).join('')}
+                </ul>
+            </div>
+        `;
+        container.appendChild(wrapper);
+    });
+
+    // Mostrar AL FINAL el plan actual de la persona
+    const currentPlanObj = currentPlan === "free" ? { name: "Free", price: "Gratis" } : allPlans.find(p => p.key === currentPlan);
+    
+    if (currentPlanObj) {
+        const currentWrapper = document.createElement("div");
+        currentWrapper.className = "plan-card-wrapper";
+        currentWrapper.style.opacity = "0.9";
+        currentWrapper.innerHTML = `
+            <div class="plan-card">
+                <span class="plan-badge-current">Tu plan actual</span>
+                <h3>${currentPlanObj.name}</h3>
+                <div class="plan-desc">Plan activo en tu cuenta Heizo.</div>
+                <button class="plan-card-btn" style="background:#e2e8f0; color:#475569; cursor:default;" disabled>
+                    Suscripción actual
+                </button>
+            </div>
+        `;
+        container.appendChild(currentWrapper);
+    }
+}
+
+// VINCULAR BOTÓN DE SUSCRIPCIÓN EN EL MENÚ DE CUENTA
 const accountSubMenuItem = document.querySelector("#account-menu div:nth-child(2)");
 if (accountSubMenuItem) {
-    accountSubMenuItem.onclick = () => {
-        openSubscriptionScreen();
-    };
+    accountSubMenuItem.onclick = openSubscriptionScreen;
 }
 
 const upgradePlanBtn = document.getElementById("upgrade-plan-btn");
 if (upgradePlanBtn) {
-    upgradePlanBtn.onclick = () => {
-        openSubscriptionScreen();
-    };
+    upgradePlanBtn.onclick = openSubscriptionScreen;
 }
 
-// SINCRONIZAR CRÉDITOS DEL USUARIO
-function updateUserCreditsDisplay(credits) {
-    const display = document.getElementById("user-credits-display");
-    if (display) {
-        display.textContent = `${credits} Créditos`;
-    }
-    localStorage.setItem("heizo_user_credits", credits);
-}
-
-// PROCESAR COMPRA Y PAGOS REALES
+// PROCESAR COMPRA Y PAGOS DE PAYPAL
 async function processPayment(itemType, itemId, priceUSD) {
     if (!currentUser) {
         alert("Inicia sesión para realizar una compra.");
@@ -4248,18 +4354,14 @@ async function processPayment(itemType, itemId, priceUSD) {
     }
 
     try {
-        showFlashToast("Iniciando pasarela de pago...");
-
-        // Redirección o integración de Checkout (Ej: Stripe / MercadoPago Endpoint)
+        showFlashToast("Iniciando pasarela de pago PayPal...");
         const checkoutUrl = `https://checkout.heizo.xyz/pay?user_id=${currentUser.id}&type=${itemType}&item=${itemId}&price=${priceUSD}`;
-        
         window.location.href = checkoutUrl;
-
     } catch (err) {
         console.error("Error al iniciar pago:", err);
         alert("Ocurrió un error al procesar la solicitud de pago.");
     }
-    }
+  }
 
 document
 .getElementById("logout-btn")
