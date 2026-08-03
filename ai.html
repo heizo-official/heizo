@@ -1632,15 +1632,36 @@ padding-right:2px;
     filter: grayscale(70%);
 }
 
-/* ===== RECUADRO DE CRÉDITOS (AZUL CIELO A AZUL ELÉCTRICO) ===== */
+/* ===== REGULACIÓN DE ALTURA A 48px PARA CONFIG Y CRÉDITOS ===== */
+#video-config-widget {
+    position: fixed;
+    top: 70px;
+    right: 70px;
+    height: 48px;
+    z-index: 9999;
+    display: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
 #credits-widget {
     position: fixed;
     top: 70px;
     left: 70px;
     height: 48px;
-    z-index: 99999;
+    z-index: 9999;
     display: flex;
     align-items: center;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+/* OCULTAR AUTOMÁTICAMENTE AMBOS BOTONES CUANDO EL MENÚ/MODAL ESTÁ ABIERTO */
+body.sidebar-active #video-config-widget,
+body.sidebar-active #credits-widget,
+body.modal-active #video-config-widget,
+body.modal-active #credits-widget {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
 }
 
 .credits-border-wrapper {
@@ -1686,8 +1707,8 @@ padding-right:2px;
     color: #0072ff;
 }
 
-/* ===== PANTALLA FULLSCREEN DE SUSCRIPCIONES Y CRÉDITOS ===== */
-#subscription-screen {
+/* ===== PANTALLAS DE SUSCRIPCIONES Y CRÉDITOS ===== */
+#subscription-screen, #credits-screen {
     position: fixed;
     top: 0;
     left: 0;
@@ -1709,7 +1730,7 @@ padding-right:2px;
     text-align: center;
 }
 
-/* TABLETAS DE SUSCRIPCIÓN CON BORDE ANIMADO AZUL (ESTILO CHATGPT / GEMINI) */
+/* TARJETAS DE PLANES CON BORDE DE LUZ AZUL */
 .plan-card-wrapper {
     position: relative;
     border-radius: 26px;
@@ -1735,23 +1756,26 @@ padding-right:2px;
     color: #111827;
 }
 
+.plan-card .plan-badge-current {
+    float: right;
+    background: #e0f2fe;
+    color: #0284c7;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
 .plan-card .plan-desc {
     font-size: 14px;
     color: #6b7280;
     margin-bottom: 18px;
 }
 
-.plan-card .plan-price {
-    font-size: 26px;
-    font-weight: 700;
-    color: #0f172a;
-    margin-bottom: 18px;
-}
-
 .plan-card-btn {
     width: 100%;
     padding: 16px;
-    border-radius: 16px;
+    border-radius: 18px;
     border: none;
     background: #0f172a;
     color: #ffffff;
@@ -1769,7 +1793,7 @@ padding-right:2px;
 .plan-features {
     list-style: none;
     padding: 0;
-    margin: 0 0 16px 0;
+    margin: 0;
 }
 
 .plan-features li {
@@ -1781,37 +1805,58 @@ padding-right:2px;
     gap: 8px;
 }
 
-/* TIENDA DE CRÉDITOS (ESTILO DRAMABOX: BLANCO Y DORADO) */
-.credits-shop-section {
-    margin-top: 36px;
-    text-align: left;
+/* BOTÓN REDONDEADO ELEGANTE DE COMPRAR CRÉDITOS / VER SUSCRIPCIONES */
+.pill-action-wrapper {
+    position: relative;
+    border-radius: 40px;
+    padding: 2px;
+    margin-top: 30px;
+    margin-bottom: 40px;
+    background: linear-gradient(115deg, #00d2ff 0%, #3a7bd5 50%, #0052d4 100%);
+    background-size: 200% 200%;
+    animation: electricBlueGlow 3.5s linear infinite;
+    box-shadow: 0 8px 25px rgba(0, 149, 255, 0.25);
 }
 
-.credits-shop-title {
-    font-size: 18px;
+.pill-action-btn {
+    width: 100%;
+    padding: 18px 24px;
+    border-radius: 38px;
+    border: none;
+    background: #0f172a;
+    color: #ffffff;
+    font-size: 16px;
     font-weight: 700;
-    color: #111827;
-    margin-bottom: 16px;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 10px;
+    font-family: inherit;
+    transition: transform 0.15s ease;
 }
 
+.pill-action-btn:active {
+    transform: scale(0.97);
+}
+
+/* TIENDA DE CRÉDITOS BLANCO Y DORADO */
 .credits-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px;
+    gap: 14px;
+    margin-top: 20px;
 }
 
 .credit-card-gold {
     background: #ffffff;
     border: 2px solid #f59e0b;
-    border-radius: 20px;
-    padding: 16px;
+    border-radius: 22px;
+    padding: 18px 14px;
     text-align: center;
     box-shadow: 0 8px 20px rgba(245, 158, 11, 0.12);
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease;
 }
 
 .credit-card-gold:active {
@@ -1823,15 +1868,15 @@ padding-right:2px;
     color: #ffffff;
     font-size: 11px;
     font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 10px;
+    padding: 4px 10px;
+    border-radius: 12px;
     display: inline-block;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     text-transform: uppercase;
 }
 
 .credit-card-gold .amount {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 800;
     color: #b45309;
     margin-bottom: 4px;
@@ -1842,7 +1887,6 @@ padding-right:2px;
     font-weight: 700;
     color: #111827;
 }
-
 
 /* ===== BOTÓN DE 3 PUNTOS EN ESQUINA SUPERIOR DERECHA (MEDIA) ===== */
 .media-card-wrapper {
