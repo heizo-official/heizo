@@ -2647,29 +2647,21 @@ button.addEventListener("click", async () => {
 if(input.value.trim() === "" && !selectedImageBase64) return;
 if(isGenerating) return;
 
-// Guardar la foto en una variable antes de limpiar la previsualización
 const imageToSend = selectedImageBase64;
 
 if (!currentChatId) {
-
     const title = input.value.trim().substring(0, 40);
-
     await createChat(title);
-
 }
 
-
 isGenerating = true;
-
 button.disabled = true;
-
 
 if (imageSuggestions) imageSuggestions.style.display = "none";
 
-    
- const userText = input.value.trim();
+const userText = input.value.trim();
 
-// 1. Si hay foto adjunta, renderizarla ARRIBA separada de la burbuja (Estilo ChatGPT / Gemini)
+// 1. Renderizar imagen enviada si existe
 if (imageToSend) {
     const userImgContainer = document.createElement("div");
     userImgContainer.style.marginLeft = "auto";
@@ -2682,7 +2674,7 @@ if (imageToSend) {
     chatBox.appendChild(userImgContainer);
 }
 
-// 2. Burbuja de texto limpia del usuario
+// 2. Burbuja del usuario
 const userMessage = document.createElement("div");
 userMessage.className = "message";
 userMessage.style.background = "#ffffff";
@@ -2703,7 +2695,6 @@ userMessage.scrollIntoView({
     block: "start"
 });
 
-// 3. Estructurar el guardado para conservar la foto al recargar la página
 const payloadToSave = imageToSend 
     ? JSON.stringify({ text: userText, image: imageToSend })
     : userText;
@@ -2714,26 +2705,72 @@ chatHistory.push({
     image: imageToSend || null
 });
 
-await saveMessage("user", payloadToSave);    
-    
-const thinkingMessage = document.createElement("div");
+await saveMessage("user", payloadToSave);
 
-thinkingMessage.className = "message ai";
+// 3. DETECTAR INTENCIÓN Y CREAR CONTENEDOR EN TIEMPO REAL
+const isVideoReq = isVideoMode || /v[ií]deo|animaci[oó]n|hazme un video|crea un video|genera un video|animar/i.test(userText);
+const isImageReq = !isVideoReq && (isImagesMode || /crea|genera|dibuja|haz|hagas|diseña|picture|draw|versi[oó]n|variaci[oó]n|modifica|rediseña|cambia|edita|realista|foto|añade|ponme|agrega|quita|remueve/i.test(userText) || (imageToSend && !/qu[eé]\s+(ves|observas)|analiza|describe|explica/i.test(userText)));
+const isResearchReq = !isVideoReq && !isImageReq && /investiga|busca|analiza|explica|resumen|qu[eé]\s+es|quien|historia|detalle/i.test(userText);
 
-thinkingMessage.innerHTML = "⏳ Heizo está pensando...";
+const aiMessage = document.createElement("div");
+aiMessage.className = "message ai";
 
-chatBox.appendChild(thinkingMessage);
+// CASO A: VÍDEO -> APARICIÓN INMEDIATA DEL SKELETON DENTRO DEL RECUADRO NEGRO
+if (isVideoReq) {
+    aiMessage.style.padding = "6px";
+    aiMessage.style.borderRadius = "20px";
+    aiMessage.innerHTML = `
+        <div class="video-card-container media-card-wrapper" style="min-height: 240px; position: relative;">
+            <div class="image-skeleton-loader"></div>
+            <div class="media-status-badge">
+                <span class="typing-dots"><span></span><span></span><span></span></span>
+                <span>Generando vídeo 1080p...</span>
+            </div>
+        </div>
+    `;
+} 
+// CASO B: IMAGEN O EDICIÓN -> APARICIÓN INMEDIATA DEL SKELETON CON HAZ DE LUZ ROSA Y AZUL
+else if (isImageReq) {
+    const statusText = imageToSend ? "Editando imagen..." : "Generando imagen...";
+    aiMessage.style.padding = "6px";
+    aiMessage.style.borderRadius = "20px";
+    aiMessage.innerHTML = `
+        <div class="image-card-container media-card-wrapper" style="min-height: 300px; position: relative;">
+            <div class="image-skeleton-loader"></div>
+            <div class="media-status-badge">
+                <span class="typing-dots"><span></span><span></span><span></span></span>
+                <span>${statusText}</span>
+            </div>
+        </div>
+    `;
+} 
+// CASO C: TEXTO / INVESTIGACIÓN / HISTORIA -> 3 PUNTOS ANIMADOS Y TEXTO DINÁMICO
+else {
+    let statusLabel = "";
+    if (isResearchReq) {
+        statusLabel = "<span>Investigando...</span>";
+    } else if (imageToSend) {
+        statusLabel = "<span>Analizando imagen...</span>";
+    }
+
+    aiMessage.innerHTML = `
+        <div style="display:flex; align-items:center; gap:8px; color:#4b5563; font-size:14px; font-weight:500;">
+            <span class="typing-dots" style="color:#0f2747;"><span></span><span></span><span></span></span>
+            ${statusLabel}
+        </div>
+    `;
+}
+
+chatBox.appendChild(aiMessage);
 
 setTimeout(() => {
-    thinkingMessage.scrollIntoView({
+    aiMessage.scrollIntoView({
         behavior: "smooth",
         block: "start"
     });
 }, 50);
 
 try {
-
-console.log("Enviando pregunta");
 
 const response = await fetch("https://noisy-boat-15c3.heizoai.workers.dev/", {
 method: "POST",
@@ -2746,16 +2783,14 @@ history: chatHistory.slice(-30),
 image: imageToSend || null,
 is_image_mode: isImagesMode,
 is_video_mode: isVideoMode,
-duration: getSavedVideoConfig() ? getSavedVideoConfig().duration : 3,
-quality: getSavedVideoConfig() ? getSavedVideoConfig().quality : "480p",
+duration: getSavedVideoConfig() ? getSavedVideoConfig().duration : 6,
+quality: getSavedVideoConfig() ? getSavedVideoConfig().quality : "1080p",
 plan: localStorage.getItem('heizo_test_plan') || "Free"
 })
 });
 
 if (!response.ok) {
-    throw new Error(
-        "HTTP Error: " + response.status
-    );
+    throw new Error("HTTP Error: " + response.status);
 }
 
 const reader = response.body.getReader();
@@ -2763,31 +2798,15 @@ const decoder = new TextDecoder();
 
 let fullReply = "";
 let buffer = "";
-
-console.log("Respuesta recibida");
-
-thinkingMessage.remove();
-
-const aiMessage = document.createElement("div");
-
-aiMessage.className = "message ai";
-
-aiMessage.textContent = "";
+let isFirstChunk = true;
 
 const copyBtn = document.createElement("div");
-
 copyBtn.className = "copy-btn";
-
 copyBtn.innerHTML = "⧉";
-
 copyBtn.onclick = () => {
-
     navigator.clipboard.writeText(aiMessage.textContent);
-
     const toast = document.createElement("div");
-
     toast.innerText = "Copiado";
-
     toast.style.position = "fixed";
     toast.style.bottom = "100px";
     toast.style.left = "50%";
@@ -2798,19 +2817,11 @@ copyBtn.onclick = () => {
     toast.style.borderRadius = "10px";
     toast.style.fontSize = "14px";
     toast.style.zIndex = "9999";
-
     document.body.appendChild(toast);
-
-    setTimeout(() => {
-        toast.remove();
-    }, 1500);
-
+    setTimeout(() => toast.remove(), 1500);
 };
 
-chatBox.appendChild(aiMessage);
-chatBox.appendChild(copyBtn);
-
-    while (true) {
+while (true) {
 
 const { done, value } = await reader.read();
 
@@ -2819,7 +2830,6 @@ if (done) break;
 buffer += decoder.decode(value, { stream: true });
 
 const lines = buffer.split("\n");
-
 buffer = lines.pop() || "";
 
 for (const line of lines) {
@@ -2831,26 +2841,29 @@ const data = line.slice(6).trim();
 if (data === "[DONE]") continue;
 
 try {
+    const json = JSON.parse(data);
+    const content = json.choices?.[0]?.delta?.content || "";
 
-            const json = JSON.parse(data);
+    fullReply += content;
 
-            const content =
-                json.choices?.[0]?.delta?.content || "";
-
-            fullReply += content;
-
-            aiMessage.textContent = fullReply;
-
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-        } catch (e) {}
-
+    // Si es respuesta de texto normal, limpiar el indicador inicial en la primera palabra
+    if (!isVideoReq && !isImageReq) {
+        if (isFirstChunk) {
+            aiMessage.innerHTML = "";
+            isFirstChunk = false;
+        }
+        aiMessage.textContent = fullReply;
     }
 
-    }
+    chatBox.scrollTop = chatBox.scrollHeight;
 
-chatBox.scrollTop = chatBox.scrollHeight;
+} catch (e) {}
 
+}
+
+}
+
+// PROCESAR RESPUESTA FINAL DE VÍDEO O IMAGEN EN EL CONTENEDOR EXISTENTE
 const cleanReply = fullReply.trim();
 const isVideoUrl = cleanReply.endsWith(".mp4") || cleanReply.includes(".mp4") || isVideoMode;
 const msgId = aiMessage.getAttribute("data-message-id") || "";
@@ -2887,8 +2900,8 @@ if (isVideoUrl && (cleanReply.startsWith("http") || cleanReply.startsWith("data:
                     <circle cx="12" cy="19" r="1"/>
                 </svg>
             </button>
-            <div class="image-skeleton-loader" id="loader-${Date.now()}"></div>
-            <img src="${cleanReply}" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none'; this.nextElementSibling.classList.add('visible');" alt="HEIZO AI Image">
+            <div class="image-skeleton-loader"></div>
+            <img src="${cleanReply}" onload="this.classList.add('loaded'); if(this.previousElementSibling) this.previousElementSibling.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.classList.add('visible');" alt="HEIZO AI Image">
             <button class="img-download-btn-floating" title="Descargar imagen" onclick="downloadImage('${cleanReply}', 'imagen_heizo')">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 15V3"/><path d="M7 10l5 5 5-5"/><path d="M20 21H4"/>
@@ -2896,11 +2909,11 @@ if (isVideoUrl && (cleanReply.startsWith("http") || cleanReply.startsWith("data:
             </button>
         </div>
     `;
+} else if (!isVideoReq && !isImageReq) {
+    chatBox.appendChild(copyBtn);
 }
 
-
 const userTop = userMessage.offsetTop;
-
 window.scrollTo({
     top: userTop - 120,
     behavior: "smooth"
@@ -2911,19 +2924,7 @@ chatHistory.push({
     text: fullReply
 });
 
-
 await saveMessage("assistant", fullReply);
-
-/*
-await supabaseClient
-    .from("chats")
-    .update({
-        messages: chatHistory,
-        updated_at: new Date().toISOString()
-    })
-    .eq("id", currentChatId);
-    */
-
 
 isGenerating = false;
 button.disabled = false;
@@ -2935,21 +2936,11 @@ button.disabled = false;
 
 console.error(error);
 
-thinkingMessage.remove();
-
-const aiMessage = document.createElement("div");
-
-aiMessage.className = "message ai";
-
-aiMessage.textContent =
-"⚠️ Error temporal de conexión. Intenta nuevamente.";
-
-chatBox.appendChild(aiMessage);
+aiMessage.innerHTML = "⚠️ Error temporal de conexión. Intenta nuevamente.";
 
 }
 
 input.value = "";
-
 chatBox.scrollTop = chatBox.scrollHeight;
 
 });
