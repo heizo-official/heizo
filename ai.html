@@ -1435,7 +1435,7 @@ padding-right:2px;
     inset: 0;
     width: 100%;
     height: 100%;
-    min-height: 320px;
+    min-height: 280px;
     background: #f5f7fb;
     overflow: hidden;
     display: flex;
@@ -1453,23 +1453,65 @@ padding-right:2px;
     background: linear-gradient(
         115deg,
         transparent 35%,
-        rgba(128, 212, 255, 0.4) 47%,
-        rgba(255, 179, 217, 0.4) 53%,
+        rgba(128, 212, 255, 0.45) 47%,
+        rgba(255, 179, 217, 0.45) 53%,
         transparent 65%
     );
     animation: geminiLightSweep 3.2s infinite ease-in-out;
 }
 
 @keyframes geminiLightSweep {
-    0% {
-        transform: translate(-40%, -40%) rotate(0deg);
-    }
-    50% {
-        transform: translate(20%, 20%) rotate(180deg);
-    }
-    100% {
-        transform: translate(-40%, -40%) rotate(360deg);
-    }
+    0% { transform: translate(-40%, -40%) rotate(0deg); }
+    50% { transform: translate(20%, 20%) rotate(180deg); }
+    100% { transform: translate(-40%, -40%) rotate(360deg); }
+}
+
+/* ===== EFECTO OLA DE 3 PUNTOS (ESTILO GEMINI / CHATGPT) ===== */
+.typing-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 4px;
+}
+
+.typing-dots span {
+    width: 6px;
+    height: 6px;
+    background-color: currentColor;
+    border-radius: 50%;
+    display: inline-block;
+    animation: dotWave 1.4s infinite ease-in-out both;
+}
+
+.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+.typing-dots span:nth-child(3) { animation-delay: 0s; }
+
+@keyframes dotWave {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.35; }
+    40% { transform: scale(1.15); opacity: 1; }
+}
+
+/* ETIQUETA SOBRE EL SKELETON MIENTRAS GENERA MEDIA */
+.media-status-badge {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    background: rgba(15, 23, 42, 0.72);
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+    pointer-events: none;
 }
 
 /* ===== BOTÓN FLOTANTE GLASSMORPHISM (TRANSLÚCIDO) ===== */
