@@ -4493,15 +4493,76 @@ async function processPayment(itemType, itemId, priceUSD) {
         return;
     }
 
-    try {
-        showFlashToast("Iniciando pasarela de pago PayPal...");
-        const checkoutUrl = `https://checkout.heizo.xyz/pay?user_id=${currentUser.id}&type=${itemType}&item=${itemId}&price=${priceUSD}`;
-        window.location.href = checkoutUrl;
-    } catch (err) {
-        console.error("Error al iniciar pago:", err);
-        alert("Ocurrió un error al procesar la solicitud de pago.");
+    modalTitle.textContent = itemType === 'credits' 
+        ? `Comprar Paquete (${itemId.replace('pack_', '')} Créditos)` 
+        : `Suscripción ${itemId.toUpperCase()}`;
+    modalDesc.textContent = `Monto a pagar: $${priceUSD} USD. Selecciona tu método de pago con tarjeta o PayPal:`;
+    modalInput.style.display = "none";
+    
+    let paypalContainer = document.getElementById("paypal-button-container");
+    if (!paypalContainer) {
+        paypalContainer = document.createElement("div");
+        paypalContainer.id = "paypal-button-container";
+        paypalContainer.style.marginTop = "15px";
+        document.querySelector("#custom-modal .modal-actions").before(paypalContainer);
     }
-  }
+    paypalContainer.innerHTML = "";
+    modalConfirmBtn.style.display = "none";
+
+    showCustomModal();
+
+    if (window.paypal) {
+        window.paypal.Buttons({
+            style: {
+                layout: 'vertical',
+                color:  'gold',
+                shape:  'rect',
+                label:  'pay'
+            },
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: { value: priceUSD.toString() },
+                        description: `Heizo AI - ${itemType} (${itemId})`
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(async function(details) {
+                    closeModal();
+                    
+                    if (itemType === 'credits') {
+                        const addedCredits = itemId === 'pack_60' ? 60 : itemId === 'pack_180' ? 180 : 450;
+                        const batches = getCreditBatches();
+                        const expiresAt = new Date();
+                        expiresAt.setDate(expiresAt.getDate() + 90);
+                        
+                        batches.push({
+                            id: "purchased_" + Date.now(),
+                            amount: addedCredits,
+                            issued_at: new Date().toISOString(),
+                            expires_at: expiresAt.toISOString(),
+                            type: "purchase"
+                        });
+                        
+                        saveCreditBatches(batches);
+                    } else if (itemType === 'subscription') {
+                        setTestPlan(itemId.charAt(0).toUpperCase() + itemId.slice(1));
+                    }
+
+                    updateUserCreditsDisplay();
+                    showFlashToast("¡Pago completado con éxito!");
+                });
+            },
+            onError: function(err) {
+                console.error("Error en PayPal Checkout:", err);
+                alert("Ocurrió un error con el procesador de pagos.");
+            }
+        }).render('#paypal-button-container');
+    } else {
+        paypalContainer.innerHTML = "<p style='color:red; font-size:12px;'>Error al cargar PayPal. Verifica que la etiqueta script con tu Client ID esté en el head.</p>";
+    }
+}
 
 document
 .getElementById("logout-btn")
