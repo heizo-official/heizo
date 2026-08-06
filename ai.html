@@ -2837,7 +2837,8 @@ is_image_mode: isImagesMode,
 is_video_mode: isVideoMode,
 duration: getSavedVideoConfig() ? getSavedVideoConfig().duration : 6,
 quality: getSavedVideoConfig() ? getSavedVideoConfig().quality : "1080p",
-plan: localStorage.getItem('heizo_test_plan') || "Free"
+plan: localStorage.getItem('heizo_test_plan') || "Free",
+credits: getAvailableCreditsTotal()
 })
 });
 
