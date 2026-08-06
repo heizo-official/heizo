@@ -3078,35 +3078,23 @@ supabaseClient.auth.getUser().then(async ({ data }) => {
 
 // ===== FUNCIÓN GLOBAL PARA CAMBIAR PLAN DE PRUEBA =====
 function setTestPlan(planName) {
-    // 1. Guardar el nuevo plan
     localStorage.setItem('heizo_test_plan', planName);
+    localStorage.removeItem("heizo_last_monthly_assigned"); // Forzar asignación inmediata de créditos del nuevo plan
     
-    // 2. Recargar los datos visuales de la cuenta (actualiza texto y botón Upgrade)
+    if (typeof updateUserCreditsDisplay === "function") {
+        updateUserCreditsDisplay();
+    }
     if (typeof loadAccountData === "function") {
         loadAccountData();
     }
-    
-    // 3. Re-renderizar el menú de vídeo si está abierto
     if (typeof renderVideoConfigForPlan === "function") {
         renderVideoConfigForPlan();
     }
     
-    // 4. Toast de confirmación
-    const toast = document.createElement("div");
-    toast.innerText = `Plan de prueba cambiado a: ${planName}`;
-    toast.style.position = "fixed";
-    toast.style.bottom = "90px";
-    toast.style.left = "50%";
-    toast.style.transform = "translateX(-50%)";
-    toast.style.background = "#0f172a";
-    toast.style.color = "white";
-    toast.style.padding = "8px 14px";
-    toast.style.borderRadius = "10px";
-    toast.style.fontSize = "13px";
-    toast.style.zIndex = "999999";
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 1500);
-}
+    if (typeof showFlashToast === "function") {
+        showFlashToast(`Plan actualizado a: ${planName}`);
+    }
+    }
 
 
 async function loadAccountData() {
