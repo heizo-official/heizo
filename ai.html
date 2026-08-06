@@ -4389,6 +4389,115 @@ if (upgradePlanBtn) {
     upgradePlanBtn.onclick = openSubscriptionScreen;
 }
 
+// ==========================================
+// SISTEMA DE CRÉDITOS ACUMULABLES (VIGENCIA 90 DÍAS - FIFO)
+// ==========================================
+
+function getCreditBatches() {
+    try {
+        const stored = localStorage.getItem("heizo_credit_batches");
+        return stored ? JSON.parse(stored) : [];
+    } catch(e) {
+        return [];
+    }
+}
+
+function saveCreditBatches(batches) {
+    localStorage.setItem("heizo_credit_batches", JSON.stringify(batches));
+}
+
+// Procesa la asignación mensual según el plan y elimina lotes con más de 90 días
+function processCreditRollover() {
+    const now = new Date();
+    let batches = getCreditBatches();
+
+    // 1. Eliminar lotes cuya fecha de expiración haya pasado (> 90 días)
+    batches = batches.filter(batch => new Date(batch.expires_at) > now);
+
+    // 2. Comprobar cuota del plan activo
+    const currentPlan = (localStorage.getItem('heizo_test_plan') || "Free").toLowerCase();
+    const lastMonthlyAssigned = localStorage.getItem("heizo_last_monthly_assigned");
+    const currentMonthKey = `${now.getFullYear()}-${now.getMonth() + 1}`;
+
+    let planMonthlyCredits = 0;
+    if (currentPlan === "standard") planMonthlyCredits = 30;
+    else if (currentPlan === "plus") planMonthlyCredits = 60;
+    else if (currentPlan === "premium") planMonthlyCredits = 100;
+
+    // Asignar créditos del mes con 90 días de caducidad si aún no se han entregado este mes
+    if (planMonthlyCredits > 0 && lastMonthlyAssigned !== currentMonthKey) {
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 90); // 3 meses exactos
+
+        batches.push({
+            id: "monthly_" + Date.now(),
+            amount: planMonthlyCredits,
+            issued_at: now.toISOString(),
+            expires_at: expiresAt.toISOString(),
+            type: "subscription"
+        });
+
+        localStorage.setItem("heizo_last_monthly_assigned", currentMonthKey);
+    }
+
+    saveCreditBatches(batches);
+}
+
+// Obtener total de créditos disponibles sumando lotes válidos y saldo comprado
+function getAvailableCreditsTotal() {
+    processCreditRollover();
+    const now = new Date();
+    const batches = getCreditBatches();
+    const purchasedExtra = parseInt(localStorage.getItem("heizo_user_credits") || "0");
+    
+    const validBatchesTotal = batches
+        .filter(b => new Date(b.expires_at) > now)
+        .reduce((sum, b) => sum + b.amount, 0);
+
+    return validBatchesTotal + purchasedExtra;
+}
+
+// Descontar créditos consumidos empezando por los lotes más antiguos
+function deductCreditsFromBatches(amountToDeduct) {
+    const now = new Date();
+    let batches = getCreditBatches()
+        .filter(b => new Date(b.expires_at) > now)
+        .sort((a, b) => new Date(a.expires_at) - new Date(b.expires_at));
+
+    let remaining = amountToDeduct;
+
+    for (let batch of batches) {
+        if (batch.amount <= remaining) {
+            remaining -= batch.amount;
+            batch.amount = 0;
+        } else {
+            batch.amount -= remaining;
+            remaining = 0;
+            break;
+        }
+    }
+
+    batches = batches.filter(b => b.amount > 0);
+    saveCreditBatches(batches);
+
+    if (remaining > 0) {
+        let purchased = parseInt(localStorage.getItem("heizo_user_credits") || "0");
+        purchased = Math.max(0, purchased - remaining);
+        localStorage.setItem("heizo_user_credits", purchased.toString());
+    }
+
+    updateUserCreditsDisplay();
+}
+
+function updateUserCreditsDisplay() {
+    const display = document.getElementById("user-credits-display");
+    const totalAvailable = getAvailableCreditsTotal();
+
+    if (display) {
+        display.textContent = `${totalAvailable} Créditos`;
+    }
+}
+
 // PROCESAR COMPRA Y PAGOS DE PAYPAL
 async function processPayment(itemType, itemId, priceUSD) {
     if (!currentUser) {
