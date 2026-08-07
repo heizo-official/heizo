@@ -4339,9 +4339,9 @@ function renderSubscriptionCards() {
                 <h3>${plan.name}</h3>
                 <div class="plan-desc">${plan.desc}</div>
                 <div class="plan-price">${plan.price}</div>
-                 <button class="plan-card-btn" onclick="setTestPlan('${plan.name}')">
-                         Cambiar a ${plan.name}
-                        </button>
+                 <button class="plan-card-btn" onclick="processPayment('subscription', '${plan.key}', ${plan.key === 'standard' ? 10 : plan.key === 'plus' ? 20 : 50})">
+                    Cambiar a ${plan.name}
+                </button>
                 <ul class="plan-features">
                     ${plan.features.map(f => `<li>${f}</li>`).join('')}
                 </ul>
