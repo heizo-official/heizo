@@ -3166,7 +3166,7 @@ if (avatar) {
     if (upgradeBtn) {
         upgradeBtn.disabled = false;
 
-        if (currentPlan === "Free") {
+                if (currentPlan === "Free") {
             upgradeBtn.textContent = "Upgrade to Standard";
         } else if (currentPlan === "Standard") {
             upgradeBtn.textContent = "Upgrade to Plus";
@@ -3176,6 +3176,12 @@ if (avatar) {
             upgradeBtn.textContent = "Current Plan: Premium";
             upgradeBtn.disabled = true;
         }
+    }
+
+    // Actualizar créditos en pantalla automáticamente al cargar la cuenta
+    if (typeof updateUserCreditsDisplay === "function") {
+        updateUserCreditsDisplay();
+    }
     }
 }
 
