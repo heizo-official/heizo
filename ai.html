@@ -3161,9 +3161,9 @@ if (avatar) {
 
     document.getElementById("account-plan").textContent = currentPlan;
 
-    const upgradeBtn = document.getElementById("upgrade-plan-btn");
+        const upgradeBtn = document.getElementById("upgrade-plan-btn");
 
-        if (upgradeBtn) {
+    if (upgradeBtn) {
         upgradeBtn.disabled = false;
 
         if (currentPlan === "Free") {
@@ -3176,7 +3176,11 @@ if (avatar) {
             upgradeBtn.textContent = "Current Plan: Premium";
             upgradeBtn.disabled = true;
         }
-        }
+    }
+
+    if (typeof updateUserCreditsDisplay === "function") {
+        updateUserCreditsDisplay();
+    }
 }
 
 
