@@ -2682,32 +2682,64 @@ menuBtn.addEventListener("click", openSidebar);
 sidebarOverlay.addEventListener("click", closeSidebar);
 
 
-    newChatBtn.addEventListener("click", async () => {
+    // Sugerencias sutiles y adaptativas de idioma para New Chat
+function renderNewChatWelcome() {
+    chatBox.innerHTML = "";
+    chatHistory = [];
+    currentChatId = null;
 
+    const isEs = (navigator.language || 'es').toLowerCase().startsWith('es');
+    const welcomeMsgText = isEs 
+        ? "Hola. Soy HEIZO AI.\n\n¿En qué puedo ayudarte hoy?"
+        : "Hello. I am HEIZO AI.\n\nHow can I help you today?";
+
+    const welcomeDiv = document.createElement("div");
+    welcomeDiv.className = "message ai";
+    welcomeDiv.innerText = welcomeMsgText;
+    chatBox.appendChild(welcomeDiv);
+
+    const suggestionsDiv = document.createElement("div");
+    suggestionsDiv.id = "new-chat-suggestions";
+    suggestionsDiv.className = "new-chat-suggestions";
+
+    const chip1Text = isEs ? "🔍 Haz tu investigación" : "🔍 Start your research";
+    const chip2Text = isEs ? "🚀 Comienza tu proyecto" : "🚀 Begin your project";
+
+    suggestionsDiv.innerHTML = `
+        <button type="button" class="new-chat-chip" onclick="applySuggestion('${chip1Text.substring(3)}')">
+            <span>${chip1Text}</span>
+        </button>
+        <button type="button" class="new-chat-chip" onclick="applySuggestion('${chip2Text.substring(3)}')">
+            <span>${chip2Text}</span>
+        </button>
+    `;
+
+    chatBox.appendChild(suggestionsDiv);
+    scrollToBottom();
+}
+
+function applySuggestion(text) {
+    input.value = text;
+    const tempSuggestions = document.getElementById("new-chat-suggestions");
+    if (tempSuggestions) tempSuggestions.remove();
+    input.focus();
+    resetInputHeight();
+}
+
+newChatBtn.addEventListener("click", async () => {
     resetAllModes();
     clearAttachedImage();
 
     if (chatHistory.length > 0 && currentChatId) {
-
         await loadChats();
-
     }
 
     closeSidebar();
-
-    chatBox.innerHTML = "";
-
-    chatHistory = [];
-
-    currentChatId = null;
-
+    renderNewChatWelcome();
     input.value = "";
-
     input.focus();
-
 });
-    
-    
+
         input.addEventListener("keydown", (event) => {
 
     if(event.key === "Enter" && !event.shiftKey){
