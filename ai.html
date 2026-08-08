@@ -4102,16 +4102,19 @@ async function loadImagesMessages() {
     chatBox.innerHTML = "";
     chatHistory = [];
 
-    const { data: messages } = await supabaseClient
+        const { data: messages } = await supabaseClient
         .from("messages")
         .select("*")
         .eq("chat_id", currentChatId)
         .order("created_at", { ascending: true });
 
-    if (messages) {
+    if (messages && messages.length > 0) {
+        if (imageSuggestions) imageSuggestions.style.display = "none";
         messages.forEach(msg => {
             renderImageMessage(msg.role, msg.content, msg.id, msg.metadata?.title || "Sin título");
         });
+    } else {
+        if (imageSuggestions) imageSuggestions.style.display = "flex";
     }
 }
 
