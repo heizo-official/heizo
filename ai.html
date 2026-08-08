@@ -3765,13 +3765,12 @@ function getSavedVideoConfig() {
 
     if (savedTime && (currentTime - parseInt(savedTime) < eightHoursInMs)) {
         return {
-            duration: parseInt(savedDuration),
-            quality: savedQuality
+            duration: parseInt(savedDuration) || 6,
+            quality: savedQuality || "1080p"
         };
     }
-    return null;
+    return { duration: 6, quality: "1080p" };
 }
-
 function saveVideoSelection(duration, quality) {
     if (duration !== undefined) localStorage.setItem('heizo_video_duration', duration.toString());
     if (quality !== undefined) localStorage.setItem('heizo_video_quality', quality);
