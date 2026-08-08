@@ -2241,9 +2241,16 @@ console.log("window.supabase =", window.supabase);
 <div id="images-search-btn">⌕</div>
 <div id="images-search-bar">
     <input type="text" id="images-search-input" placeholder="Buscar en esta sección...">
-    <span id="search-count-badge" style="font-size:12px; font-weight:700; color:#0f2747; background:#e2e8f0; padding:3px 8px; border-radius:10px; white-space:nowrap; margin-left:6px; display:none;">0 coincidencias</span>
+    <div id="search-nav-controls" style="display:none; align-items:center; gap:4px; margin-left:6px;">
+        <span id="search-count-badge" style="font-size:12px; font-weight:700; color:#0f2747; background:#e2e8f0; padding:3px 8px; border-radius:10px; white-space:nowrap;">0/0</span>
+        <button id="search-prev-btn" type="button" title="Anterior coincidencia" style="background:#f1f5f9; border:none; border-radius:8px; width:28px; height:28px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#0f2747; padding:0;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+        </button>
+        <button id="search-next-btn" type="button" title="Siguiente coincidencia" style="background:#f1f5f9; border:none; border-radius:8px; width:28px; height:28px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#0f2747; padding:0;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+    </div>
 </div>
-
 
 <div id="menu-btn">☰</div>
 
