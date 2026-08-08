@@ -2761,6 +2761,27 @@ await saveMessage("user", payloadToSave);
 
 // 3. DETECTAR INTENCIÓN Y CREAR CONTENEDOR EN TIEMPO REAL
 const isVideoReq = isVideoMode || /v[ií]deo|animaci[oó]n|hazme un video|crea un video|genera un video|animar/i.test(userText);
+// Redirección inmediata fuera de la sección de vídeos
+if (isVideoReq && !isVideoMode) {
+    const isEnglish = !/[áéíóúñ¿¡]/i.test(userText) && /\b(video|make|create|generate|animate)\b/i.test(userText);
+    const redirectText = isEnglish
+        ? "✨ **Cinematic Video Generation** is optimized exclusively within the **Videos** section. Please navigate to the sidebar menu and select **Videos** to create high-definition animations with full control."
+        : "✨ La **creación de vídeo cinemático** está disponible de forma optimizada en la sección de **Vídeos**. Por favor, dirígete al menú lateral y selecciona **Videos** para generar animaciones en alta definición con control total.";
+
+    const aiMessage = document.createElement("div");
+    aiMessage.className = "message ai";
+    aiMessage.innerHTML = redirectText;
+    chatBox.appendChild(aiMessage);
+
+    chatHistory.push({ type: "ai", text: redirectText });
+    await saveMessage("assistant", redirectText);
+
+    isGenerating = false;
+    button.disabled = false;
+    input.value = "";
+    chatBox.scrollTop = chatBox.scrollHeight;
+    return;
+    }
 const isImageReq = !isVideoReq && (isImagesMode || /crea|genera|dibuja|haz|hagas|diseña|picture|draw|versi[oó]n|variaci[oó]n|modifica|rediseña|cambia|edita|realista|foto|añade|ponme|agrega|quita|remueve/i.test(userText) || (imageToSend && !/qu[eé]\s+(ves|observas)|analiza|describe|explica/i.test(userText)));
 const isResearchReq = !isVideoReq && !isImageReq && /investiga|busca|analiza|explica|resumen|qu[eé]\s+es|quien|historia|detalle/i.test(userText);
 
