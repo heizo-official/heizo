@@ -2843,6 +2843,9 @@ button.disabled = true;
 
 if (imageSuggestions) imageSuggestions.style.display = "none";
 
+const tempSuggestions = document.getElementById("new-chat-suggestions");
+if (tempSuggestions) tempSuggestions.remove();
+
 const userText = input.value.trim();
 
 // 1. Renderizar imagen enviada si existe
