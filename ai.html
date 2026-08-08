@@ -4303,7 +4303,7 @@ async function loadImagesMessages() {
     chatBox.innerHTML = "";
     chatHistory = [];
 
-        const { data: messages } = await supabaseClient
+    const { data: messages } = await supabaseClient
         .from("messages")
         .select("*")
         .eq("chat_id", currentChatId)
@@ -4311,15 +4311,70 @@ async function loadImagesMessages() {
 
     if (messages && messages.length > 0) {
         if (imageSuggestions) imageSuggestions.style.display = "none";
+        let autoImageIndex = 1;
+
         messages.forEach(msg => {
-            renderImageMessage(msg.role, msg.content, msg.id, msg.metadata?.title || "Sin título");
+            let userTextVal = "";
+            let userImgVal = null;
+
+            if (msg.role === "user") {
+                if (typeof msg.content === "string" && msg.content.trim().startsWith("{")) {
+                    try {
+                        const parsed = JSON.parse(msg.content);
+                        userTextVal = parsed.text !== undefined ? parsed.text : "";
+                        userImgVal = parsed.image || null;
+                    } catch (e) {
+                        userTextVal = msg.content;
+                    }
+                } else {
+                    userTextVal = msg.content || "";
+                }
+
+                chatHistory.push({ type: "user", text: userTextVal, image: userImgVal });
+
+                if (userImgVal) {
+                    const userImgDiv = document.createElement("div");
+                    userImgDiv.style.marginLeft = "auto";
+                    userImgDiv.style.marginRight = "12px";
+                    userImgDiv.style.marginBottom = "6px";
+                    userImgDiv.style.maxWidth = "75%";
+                    userImgDiv.innerHTML = `
+                        <img src="${userImgVal}" style="width:100%; max-height:280px; object-fit:cover; border-radius:18px; display:block; border:1px solid #d8dde5; box-shadow:0 4px 12px rgba(0,0,0,0.06);">
+                    `;
+                    chatBox.appendChild(userImgDiv);
+                }
+
+                if (userTextVal && userTextVal.trim() !== "") {
+                    const userDiv = document.createElement("div");
+                    userDiv.className = "message";
+                    userDiv.style.background = "#ffffff";
+                    userDiv.style.marginLeft = "auto";
+                    userDiv.style.border = "1px solid #d8dde5";
+                    userDiv.style.borderRadius = "18px";
+                    userDiv.style.marginRight = "12px";
+                    userDiv.textContent = userTextVal;
+                    chatBox.appendChild(userDiv);
+                }
+            } else {
+                const cleanText = msg.content ? msg.content.trim() : "";
+                chatHistory.push({ type: "ai", text: cleanText });
+
+                let titleText = msg.metadata?.title;
+                if (!titleText || titleText === "Sin título") {
+                    titleText = `Image ${autoImageIndex}`;
+                }
+                autoImageIndex++;
+
+                renderImageMessage("assistant", cleanText, msg.id, titleText);
+            }
         });
     } else {
         if (imageSuggestions) imageSuggestions.style.display = "flex";
     }
-}
 
-function renderImageMessage(role, content, messageId, titleText) {
+    scrollToBottom();
+}
+    function renderImageMessage(role, content, messageId, titleText) {
     const messageDiv = document.createElement("div");
     messageDiv.className = role === "assistant" ? "message ai" : "message";
 
