@@ -2395,6 +2395,12 @@ console.log("window.supabase =", window.supabase);
     </div>
 </div>
 
+<!-- Modal Pantalla Completa Imagen (Estilo ChatGPT) -->
+<div id="image-fullscreen-overlay" onclick="closeImageFullscreen()">
+    <button id="image-fullscreen-close" type="button" aria-label="Cerrar" onclick="closeImageFullscreen()">✕</button>
+    <img id="image-fullscreen-img" src="" alt="Full Screen Preview" onclick="event.stopPropagation()">
+</div>
+
 <img src="logo.png" class="logo" alt="HEIZO Logo">
     
 
