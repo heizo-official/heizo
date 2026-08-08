@@ -3887,26 +3887,44 @@ if (imagesSearchBtn) {
     imagesSearchBtn.onclick = () => {
         const isVisible = imagesSearchBar.style.display === "flex";
         imagesSearchBar.style.display = isVisible ? "none" : "flex";
-        if (!isVisible && imagesSearchInput) imagesSearchInput.focus();
+        if (!isVisible && imagesSearchInput) {
+            imagesSearchInput.value = "";
+            imagesSearchInput.focus();
+            imagesSearchInput.dispatchEvent(new Event('input'));
+        }
     };
 }
 
 if (imagesSearchInput) {
     imagesSearchInput.addEventListener("input", (e) => {
         const query = e.target.value.toLowerCase().trim();
-        const cards = document.querySelectorAll(".image-card-container");
+        const countBadge = document.getElementById("search-count-badge");
+        let matchCount = 0;
 
-        cards.forEach(card => {
-            const titleText = card.querySelector(".image-card-title").textContent.toLowerCase();
-            if (titleText.includes(query)) {
-                card.closest(".message").style.display = "block";
+        // Búsqueda exclusiva dentro de los elementos cargados en el workspace de la sección activa
+        const allMessages = chatBox.querySelectorAll(".message");
+
+        allMessages.forEach(msg => {
+            const textContent = msg.textContent.toLowerCase();
+            if (query === "" || textContent.includes(query)) {
+                msg.style.display = "";
+                if (query !== "") matchCount++;
             } else {
-                card.closest(".message").style.display = "none";
+                msg.style.display = "none";
             }
         });
+
+        if (countBadge) {
+            if (query !== "") {
+                countBadge.textContent = `${matchCount} coincidencia${matchCount === 1 ? '' : 's'}`;
+                countBadge.style.display = "inline-block";
+            } else {
+                countBadge.style.display = "none";
+            }
+        }
     });
 }
-
+    
 // 3. Sugerencias Apiladas
 if (chipCreate) {
     chipCreate.onclick = () => {
