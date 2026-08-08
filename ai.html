@@ -5138,6 +5138,43 @@ if (videosNavBtn) {
     setupSectionClearLongPress(videosNavBtn, "Vídeos", () => currentChatId);
 }
 
+// ===== LÓGICA DE PANTALLA COMPLETA DE IMAGEN (ESTILO CHATGPT) =====
+function openImageFullscreen(src) {
+    const overlay = document.getElementById("image-fullscreen-overlay");
+    const img = document.getElementById("image-fullscreen-img");
+    if (overlay && img) {
+        img.src = src;
+        overlay.classList.add("show");
+    }
+}
+
+function closeImageFullscreen() {
+    const overlay = document.getElementById("image-fullscreen-overlay");
+    if (overlay) overlay.classList.remove("show");
+}
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeImageFullscreen();
+});
+
+// Listener global para tocar cualquier imagen en el chat
+chatBox.addEventListener("click", (e) => {
+    if (e.target.tagName === "IMG" && !e.target.closest(".account-avatar") && !e.target.closest("#email-login-btn") && !e.target.closest("#google-login-btn") && !e.target.closest(".logo")) {
+        openImageFullscreen(e.target.src);
+    }
+});
+
+// Helper universal para posicionar la vista al último mensaje
+function scrollToBottom() {
+    setTimeout(() => {
+        chatBox.scrollTop = chatBox.scrollHeight;
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: "smooth"
+        });
+    }, 80);
+}
+
 </script>    
 </body>
 </html>
