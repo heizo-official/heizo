@@ -4017,6 +4017,9 @@ newChatBtn.addEventListener("click", () => {
 });
 
 // 2. Control de Lupa de Búsqueda de la Sección Images
+let matchingElements = [];
+let currentMatchIndex = -1;
+
 if (imagesSearchBtn) {
     imagesSearchBtn.onclick = () => {
         const isVisible = imagesSearchBar.style.display === "flex";
@@ -4029,35 +4032,80 @@ if (imagesSearchBtn) {
     };
 }
 
+function updateSearchFocus() {
+    const navControls = document.getElementById("search-nav-controls");
+    const countBadge = document.getElementById("search-count-badge");
+
+    if (matchingElements.length === 0) {
+        if (navControls) navControls.style.display = "none";
+        return;
+    }
+
+    if (navControls) navControls.style.display = "flex";
+    if (countBadge) {
+        countBadge.textContent = `${currentMatchIndex + 1}/${matchingElements.length}`;
+    }
+
+    const targetEl = matchingElements[currentMatchIndex];
+    if (targetEl) {
+        targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+}
+
 if (imagesSearchInput) {
     imagesSearchInput.addEventListener("input", (e) => {
         const query = e.target.value.toLowerCase().trim();
-        const countBadge = document.getElementById("search-count-badge");
-        let matchCount = 0;
+        matchingElements = [];
+        currentMatchIndex = -1;
 
-        // Búsqueda exclusiva dentro de los elementos cargados en el workspace de la sección activa
         const allMessages = chatBox.querySelectorAll(".message");
 
         allMessages.forEach(msg => {
             const textContent = msg.textContent.toLowerCase();
             if (query === "" || textContent.includes(query)) {
                 msg.style.display = "";
-                if (query !== "") matchCount++;
+                if (query !== "") {
+                    matchingElements.push(msg);
+                }
             } else {
                 msg.style.display = "none";
             }
         });
 
-        if (countBadge) {
+        if (matchingElements.length > 0) {
+            currentMatchIndex = 0;
+            updateSearchFocus();
+        } else {
+            const navControls = document.getElementById("search-nav-controls");
+            const countBadge = document.getElementById("search-count-badge");
             if (query !== "") {
-                countBadge.textContent = `${matchCount} coincidencia${matchCount === 1 ? '' : 's'}`;
-                countBadge.style.display = "inline-block";
+                if (navControls) navControls.style.display = "flex";
+                if (countBadge) countBadge.textContent = "0/0";
             } else {
-                countBadge.style.display = "none";
+                if (navControls) navControls.style.display = "none";
             }
         }
     });
 }
+
+const searchNextBtn = document.getElementById("search-next-btn");
+const searchPrevBtn = document.getElementById("search-prev-btn");
+
+if (searchNextBtn) {
+    searchNextBtn.onclick = () => {
+        if (matchingElements.length === 0) return;
+        currentMatchIndex = (currentMatchIndex + 1) % matchingElements.length;
+        updateSearchFocus();
+    };
+}
+
+if (searchPrevBtn) {
+    searchPrevBtn.onclick = () => {
+        if (matchingElements.length === 0) return;
+        currentMatchIndex = (currentMatchIndex - 1 + matchingElements.length) % matchingElements.length;
+        updateSearchFocus();
+    };
+        }
     
 // 3. Sugerencias Apiladas
 if (chipCreate) {
