@@ -3868,7 +3868,23 @@ function getCurrentUserPlan() {
 }
 
 // Muestra aviso flash temporal de compra de créditos
-function showFlashToast(message) {
+function showInsufficientCreditsModal(requiredCredits) {
+    const currentTotal = getAvailableCreditsTotal();
+    modalTitle.textContent = "Créditos insuficientes";
+    modalDesc.textContent = `La generación de vídeo seleccionada requiere ${requiredCredits} créditos (${requiredCredits}s de animación). Tu saldo actual es de ${currentTotal} créditos.`;
+    modalInput.style.display = "none";
+
+    modalConfirmBtn.textContent = "⚡ Comprar Créditos";
+    modalConfirmBtn.className = "primary";
+
+    onModalConfirm = async () => {
+        openCreditsScreen();
+    };
+
+    showCustomModal();
+    }
+    
+    function showFlashToast(message) {
     const existing = document.getElementById("flash-toast-notice");
     if (existing) existing.remove();
 
