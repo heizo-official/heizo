@@ -2921,6 +2921,20 @@ if (isVideoReq && !isVideoMode) {
     chatBox.scrollTop = chatBox.scrollHeight;
     return;
     }
+
+    // Control de saldo suficiente para vídeo en la sección de Vídeos
+if (isVideoReq && isVideoMode) {
+    const reqDuration = getSavedVideoConfig() ? getSavedVideoConfig().duration : 6;
+    const reqCredits = reqDuration;
+
+    if (getAvailableCreditsTotal() < reqCredits) {
+        showInsufficientCreditsModal(reqCredits);
+        isGenerating = false;
+        button.disabled = false;
+        return;
+    }
+}
+    
 const isImageReq = !isVideoReq && (isImagesMode || /crea|genera|dibuja|haz|hagas|diseña|picture|draw|versi[oó]n|variaci[oó]n|modifica|rediseña|cambia|edita|realista|foto|añade|ponme|agrega|quita|remueve/i.test(userText) || (imageToSend && !/qu[eé]\s+(ves|observas)|analiza|describe|explica/i.test(userText)));
 const isResearchReq = !isVideoReq && !isImageReq && /investiga|busca|analiza|explica|resumen|qu[eé]\s+es|quien|historia|detalle/i.test(userText);
 
