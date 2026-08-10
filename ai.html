@@ -3632,6 +3632,7 @@ let onModalConfirm = null;
 let modalOpenedAt = 0; // Escudo protector contra toques iniciales
 
 function closeModal() {
+    document.body.classList.remove("modal-active");
     if (modalOverlay) modalOverlay.classList.remove("show");
     if (modalInput) {
         modalInput.style.display = "none";
@@ -3641,6 +3642,7 @@ function closeModal() {
 }
 
 function showCustomModal() {
+    document.body.classList.add("modal-active");
     modalOpenedAt = Date.now();
     modalOverlay.classList.add("show");
 }
