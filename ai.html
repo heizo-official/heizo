@@ -4450,6 +4450,10 @@ async function loadImagesMessages() {
 }
 
 function openMediaOptionsMenu(messageId, btnElement, mediaType = "imagen") {
+    const cardContainer = btnElement.closest(".image-card-container, .video-card-container");
+    const hiddenTitleEl = cardContainer ? cardContainer.querySelector(".image-card-title-hidden") : null;
+    const currentTitle = cardContainer ? (cardContainer.getAttribute("data-title") || (hiddenTitleEl ? hiddenTitleEl.textContent : "")) : "";
+
     modalTitle.textContent = mediaType === "video" ? "Opciones de vídeo" : "Opciones de imagen";
     modalDesc.textContent = "¿Qué deseas hacer con este archivo?";
     modalInput.style.display = "none";
@@ -4470,12 +4474,8 @@ function openMediaOptionsMenu(messageId, btnElement, mediaType = "imagen") {
         resetModalButtons();
 
         setTimeout(() => {
-            const cardContainer = btnElement.closest(".image-card-container, .video-card-container");
-            const hiddenTitleEl = cardContainer ? cardContainer.querySelector(".image-card-title-hidden") : null;
-            const currentTitle = cardContainer ? (cardContainer.getAttribute("data-title") || (hiddenTitleEl ? hiddenTitleEl.textContent : "")) : "";
-
             modalTitle.textContent = "Renombrar archivo";
-            modalDesc.textContent = "Ingresa el nombre interno para este archivo:";
+            modalDesc.textContent = "Ingresa el nuevo nombre interno para este archivo:";
             modalInput.style.display = "block";
             modalInput.value = currentTitle;
 
@@ -4487,6 +4487,8 @@ function openMediaOptionsMenu(messageId, btnElement, mediaType = "imagen") {
                 if (newTitle !== "") {
                     if (cardContainer) cardContainer.setAttribute("data-title", newTitle);
                     if (hiddenTitleEl) hiddenTitleEl.textContent = newTitle;
+                    
+                    // Actualizar únicamente el mensaje específico seleccionado en la base de datos
                     if (messageId && messageId !== "" && messageId !== "null" && messageId !== "undefined") {
                         await supabaseClient
                             .from("messages")
@@ -4503,7 +4505,30 @@ function openMediaOptionsMenu(messageId, btnElement, mediaType = "imagen") {
 
     onModalConfirm = async () => {
         resetModalButtons();
-        deleteMediaItem(messageId, btnElement, mediaType);
+        closeModal();
+        
+        // Ejecución limpia de eliminación de la foto seleccionada
+        setTimeout(async () => {
+            try {
+                if (messageId && messageId !== "" && messageId !== "null" && messageId !== "undefined") {
+                    await supabaseClient
+                        .from("messages")
+                        .delete()
+                        .eq("id", messageId);
+                }
+
+                if (cardContainer) {
+                    const messageParent = cardContainer.closest(".message");
+                    if (messageParent) {
+                        messageParent.remove();
+                    } else {
+                        cardContainer.remove();
+                    }
+                }
+            } catch (err) {
+                console.error("Error al eliminar archivo:", err);
+            }
+        }, 150);
     };
 
     showCustomModal();
