@@ -3153,6 +3153,11 @@ chatHistory.push({
 
 await saveMessage("assistant", fullReply);
 
+if (isVideoMode) {
+    const spentCredits = getSavedVideoConfig() ? getSavedVideoConfig().duration : 6;
+    deductCreditsFromBatches(spentCredits);
+    }
+
 isGenerating = false;
 button.disabled = false;
 
