@@ -3585,7 +3585,7 @@ async function loadChats() {
                             </div>
                         `;
                         chatBox.appendChild(aiDiv);
-                    } else if (cleanText.startsWith("http") || cleanText.startsWith("data:image")) {
+                                        } else if (cleanText.startsWith("http") || cleanText.startsWith("data:image")) {
                         const titleText = msg.metadata?.title || "Image";
                         aiDiv.style.padding = "6px";
                         aiDiv.style.borderRadius = "20px";
