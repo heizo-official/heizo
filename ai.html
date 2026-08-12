@@ -3152,8 +3152,11 @@ chatHistory.push({
     text: fullReply
 });
 
-await saveMessage("assistant", fullReply);
-
+const savedMsgId = await saveMessage("assistant", fullReply);
+if (savedMsgId && aiMessage) {
+    aiMessage.setAttribute("data-message-id", savedMsgId);
+}
+    
 if (isVideoMode) {
     const spentCredits = getSavedVideoConfig() ? getSavedVideoConfig().duration : 6;
     deductCreditsFromBatches(spentCredits);
