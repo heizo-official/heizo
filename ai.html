@@ -4595,27 +4595,27 @@ async function deleteImage(messageId, btnElement) {
 
 
 
-async function saveMessage(role, content) {
+async function saveMessage(role, content, metadata = null) {
+    if (!currentChatId) return null;
 
-    if (!currentChatId) return;
+    const insertData = {
+        chat_id: currentChatId,
+        role: role,
+        content: content
+    };
+    if (metadata) insertData.metadata = metadata;
 
-    const { error } = await supabaseClient
+    const { data, error } = await supabaseClient
         .from("messages")
-        .insert({
-            chat_id: currentChatId,
-            role: role,
-            content: content
-        });
+        .insert(insertData)
+        .select()
+        .single();
 
     if (error) {
-
         console.error("Error guardando mensaje:", error);
-
-        return;
-
+        return null;
     }
 
-    // Actualiza la fecha del chat para que pase a ser el más reciente
     await supabaseClient
         .from("chats")
         .update({
@@ -4623,11 +4623,9 @@ async function saveMessage(role, content) {
         })
         .eq("id", currentChatId);
 
-    // Reorganiza la lista del menú en tiempo real
     await loadChats();
-
-}
-    
+    return data ? data.id : null;
+    }
 
 
 document
