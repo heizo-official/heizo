@@ -4418,7 +4418,7 @@ async function loadImagesMessages() {
                 const cleanText = msg.content ? msg.content.trim() : "";
                 chatHistory.push({ type: "ai", text: cleanText });
 
-                let titleText = msg.metadata?.title;
+                                let titleText = msg.metadata?.title || (msg.id ? localStorage.getItem('img_title_' + msg.id) : null);
                 if (!titleText || titleText === "Sin título") {
                     titleText = `Image ${autoImageIndex}`;
                 }
