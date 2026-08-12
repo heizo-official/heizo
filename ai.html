@@ -3231,6 +3231,17 @@ document.getElementById("login-screen");
 const chatScreen =
 document.getElementById("chat-screen");
 
+// Control de tiempo de inactividad (2 horas) o cierre de sesión para forzar New Chat
+const LAST_ACTIVITY_KEY = "heizo_last_activity_time";
+const nowTime = Date.now();
+const lastActivity = localStorage.getItem(LAST_ACTIVITY_KEY);
+const twoHoursMs = 2 * 60 * 60 * 1000;
+
+if (!lastActivity || (nowTime - parseInt(lastActivity) > twoHoursMs)) {
+    localStorage.removeItem("heizo_last_active_chat");
+}
+localStorage.setItem(LAST_ACTIVITY_KEY, nowTime.toString());
+
 supabaseClient.auth.getUser().then(async ({ data }) => {
 
     if (data.user) {
