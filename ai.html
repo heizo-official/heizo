@@ -4500,13 +4500,14 @@ function openMediaOptionsMenu(messageId, btnElement, mediaType = "imagen") {
             modalConfirmBtn.textContent = "Guardar";
             modalConfirmBtn.className = "primary";
 
-                        onModalConfirm = async () => {
+                                    onModalConfirm = async () => {
                 const newTitle = modalInput.value.trim();
                 if (newTitle !== "") {
                     if (cardContainer) cardContainer.setAttribute("data-title", newTitle);
                     if (hiddenTitleEl) hiddenTitleEl.textContent = newTitle;
                     
                     if (messageId && messageId !== "" && messageId !== "null" && messageId !== "undefined") {
+                        localStorage.setItem('img_title_' + messageId, newTitle);
                         const { error } = await supabaseClient
                             .from("messages")
                             .update({ metadata: { title: newTitle } })
