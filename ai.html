@@ -2935,7 +2935,8 @@ if (isVideoReq && isVideoMode) {
     }
 }
     
-const isImageReq = !isVideoReq && (isImagesMode || /crea|genera|dibuja|haz|hagas|diseña|picture|draw|versi[oó]n|variaci[oó]n|modifica|rediseña|cambia|edita|realista|foto|añade|ponme|agrega|quita|remueve/i.test(userText) || (imageToSend && !/qu[eé]\s+(ves|observas)|analiza|describe|explica/i.test(userText)));
+const isTextDocReq = /resumen|resuma|resumir|lista|texto|explicaci[oó]n|ensayo|historia|cuento|poema|c[oó]digo|investiga|busca|analiza/i.test(userText);
+const isImageReq = !isVideoReq && (isImagesMode || ((/imagen|foto|fotograf[ií]a|dibujo|ilustraci[oó]n|retrato|logo|banner|picture|draw|paint/i.test(userText) || /crea\s+un|genera\s+un|dibuja\s+un|diseña\s+un/i.test(userText)) && !isTextDocReq) || (imageToSend && !/qu[eé]\s+(ves|observas)|analiza|describe|explica/i.test(userText)));
 const isResearchReq = !isVideoReq && !isImageReq && /investiga|busca|analiza|explica|resumen|qu[eé]\s+es|quien|historia|detalle/i.test(userText);
 
 const aiMessage = document.createElement("div");
