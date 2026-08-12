@@ -4496,18 +4496,19 @@ function openMediaOptionsMenu(messageId, btnElement, mediaType = "imagen") {
             modalConfirmBtn.textContent = "Guardar";
             modalConfirmBtn.className = "primary";
 
-            onModalConfirm = async () => {
+                        onModalConfirm = async () => {
                 const newTitle = modalInput.value.trim();
                 if (newTitle !== "") {
                     if (cardContainer) cardContainer.setAttribute("data-title", newTitle);
                     if (hiddenTitleEl) hiddenTitleEl.textContent = newTitle;
                     
-                    // Actualizar únicamente el mensaje específico seleccionado en la base de datos
                     if (messageId && messageId !== "" && messageId !== "null" && messageId !== "undefined") {
-                        await supabaseClient
+                        const { error } = await supabaseClient
                             .from("messages")
                             .update({ metadata: { title: newTitle } })
                             .eq("id", messageId);
+                        
+                        if (error) console.error("Error al guardar nombre en Supabase:", error);
                     }
                 }
             };
