@@ -5001,7 +5001,10 @@ document
 
     try {
 
-        await supabaseClient.auth.signOut();
+                await supabaseClient.auth.signOut();
+
+        localStorage.setItem("heizo_force_new_chat", "true");
+        localStorage.removeItem("heizo_last_activity_time");
 
         document.getElementById("account-menu").style.display = "none";
         document.getElementById("account-screen").style.display = "none";
