@@ -2859,65 +2859,15 @@ chatHistory.push({
 await saveMessage("user", payloadToSave);
 
 // 3. DETECTAR INTENCIÓN Y CREAR CONTENEDOR EN TIEMPO REAL
-const isVideoReq = isVideoMode || /v[ií]deo|animaci[oó]n|hazme un video|crea un video|genera un video|animar/i.test(userText);
-// Redirección inmediata fuera de la sección de vídeos
-if (isVideoReq && !isVideoMode) {
-    const isEnglish = !/[áéíóúñ¿¡]/i.test(userText) && /\b(video|make|create|generate|animate)\b/i.test(userText);
-    const redirectText = isEnglish
-        ? "✨ **Cinematic Video Generation** is optimized exclusively within the **Videos** section. Please navigate to the sidebar menu and select **Videos** to create high-definition animations with full control."
-        : "✨ La **creación de vídeo cinemático** está disponible de forma optimizada en la sección de **Vídeos**. Por favor, dirígete al menú lateral y selecciona **Videos** para generar animaciones en alta definición con control total.";
-
-    const aiMessage = document.createElement("div");
-    aiMessage.className = "message ai";
-    aiMessage.innerHTML = redirectText;
-    chatBox.appendChild(aiMessage);
-
-    chatHistory.push({ type: "ai", text: redirectText });
-    await saveMessage("assistant", redirectText);
-
-    isGenerating = false;
-    button.disabled = false;
-    input.value = "";
-    chatBox.scrollTop = chatBox.scrollHeight;
-    return;
-    }
-
-    // Control de saldo suficiente para vídeo en la sección de Vídeos
-if (isVideoReq && isVideoMode) {
-    const reqDuration = getSavedVideoConfig() ? getSavedVideoConfig().duration : 6;
-    const reqCredits = reqDuration;
-
-    if (getAvailableCreditsTotal() < reqCredits) {
-        showInsufficientCreditsModal(reqCredits);
-        isGenerating = false;
-        button.disabled = false;
-        return;
-    }
-}
-    
 const isTextDocReq = /resumen|resuma|resumir|lista|texto|explicaci[oó]n|ensayo|historia|cuento|poema|c[oó]digo|investiga|busca|analiza/i.test(userText);
-const isImageReq = !isVideoReq && (isImagesMode || ((/imagen|foto|fotograf[ií]a|dibujo|ilustraci[oó]n|retrato|logo|banner|picture|draw|paint/i.test(userText) || /crea\s+un|genera\s+un|dibuja\s+un|diseña\s+un/i.test(userText)) && !isTextDocReq) || (imageToSend && !/qu[eé]\s+(ves|observas)|analiza|describe|explica/i.test(userText)));
-const isResearchReq = !isVideoReq && !isImageReq && /investiga|busca|analiza|explica|resumen|qu[eé]\s+es|quien|historia|detalle/i.test(userText);
+const isImageReq = (isImagesMode || ((/imagen|foto|fotograf[ií]a|dibujo|ilustraci[oó]n|retrato|logo|banner|picture|draw|paint/i.test(userText) || /crea\s+un|genera\s+un|dibuja\s+un|diseña\s+un/i.test(userText)) && !isTextDocReq) || (imageToSend && !/qu[eé]\s+(ves|observas)|analiza|describe|explica/i.test(userText)));
+const isResearchReq = !isImageReq && /investiga|busca|analiza|explica|resumen|qu[eé]\s+es|quien|historia|detalle/i.test(userText);
 
 const aiMessage = document.createElement("div");
 aiMessage.className = "message ai";
 
-// CASO A: VÍDEO -> APARICIÓN INMEDIATA DEL SKELETON DENTRO DEL RECUADRO NEGRO
-if (isVideoReq) {
-    aiMessage.style.padding = "6px";
-    aiMessage.style.borderRadius = "20px";
-    aiMessage.innerHTML = `
-        <div class="video-card-container media-card-wrapper" style="min-height: 240px; position: relative;">
-            <div class="image-skeleton-loader"></div>
-            <div class="media-status-badge">
-                <span class="typing-dots"><span></span><span></span><span></span></span>
-                <span>Generando vídeo 1080p...</span>
-            </div>
-        </div>
-    `;
-} 
-// CASO B: IMAGEN O EDICIÓN -> APARICIÓN INMEDIATA DEL SKELETON CON HAZ DE LUZ ROSA Y AZUL
-else if (isImageReq) {
+// CASO A: IMAGEN O EDICIÓN -> APARICIÓN INMEDIATA DEL SKELETON
+if (isImageReq) {
     const statusText = imageToSend ? "Editando imagen..." : "Generando imagen...";
     aiMessage.style.padding = "6px";
     aiMessage.style.borderRadius = "20px";
@@ -2931,7 +2881,7 @@ else if (isImageReq) {
         </div>
     `;
 } 
-// CASO C: TEXTO / INVESTIGACIÓN / HISTORIA -> 3 PUNTOS ANIMADOS Y TEXTO DINÁMICO
+// CASO B: TEXTO / INVESTIGACIÓN / HISTORIA -> 3 PUNTOS ANIMADOS
 else {
     let statusLabel = "";
     if (isResearchReq) {
@@ -2969,9 +2919,6 @@ message: userText,
 history: chatHistory.slice(-30),
 image: imageToSend || null,
 is_image_mode: isImagesMode,
-is_video_mode: isVideoMode,
-duration: getSavedVideoConfig() ? getSavedVideoConfig().duration : 6,
-quality: getSavedVideoConfig() ? getSavedVideoConfig().quality : "1080p",
 plan: localStorage.getItem('heizo_test_plan') || "Free",
 credits: getAvailableCreditsTotal()
 })
