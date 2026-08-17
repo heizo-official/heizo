@@ -3165,9 +3165,6 @@ function setTestPlan(planName) {
     if (typeof loadAccountData === "function") {
         loadAccountData();
     }
-    if (typeof renderVideoConfigForPlan === "function") {
-        renderVideoConfigForPlan();
-    }
     
     if (typeof showFlashToast === "function") {
         showFlashToast(`Plan actualizado a: ${planName}`);
