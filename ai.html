@@ -4644,7 +4644,7 @@ async function processPayment(itemType, itemId, priceUSD) {
                     closeModal();
                     
                     if (itemType === 'credits') {
-                        const addedCredits = itemId === 'pack_60' ? 60 : itemId === 'pack_180' ? 180 : 450;
+                        const addedCredits = itemId === 'pack_120' ? 120 : itemId === 'pack_400' ? 400 : 1100;
                         const batches = getCreditBatches();
                         const expiresAt = new Date();
                         expiresAt.setDate(expiresAt.getDate() + 90);
