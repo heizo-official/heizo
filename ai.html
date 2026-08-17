@@ -4519,10 +4519,10 @@ function processCreditRollover() {
     const lastMonthlyAssigned = localStorage.getItem("heizo_last_monthly_assigned");
     const currentMonthKey = `${now.getFullYear()}-${now.getMonth() + 1}`;
 
-    let planMonthlyCredits = 0;
-    if (currentPlan === "standard") planMonthlyCredits = 30;
-    else if (currentPlan === "plus") planMonthlyCredits = 60;
-    else if (currentPlan === "premium") planMonthlyCredits = 100;
+        let planMonthlyCredits = 0;
+    if (currentPlan === "standard") planMonthlyCredits = 120;
+    else if (currentPlan === "plus") planMonthlyCredits = 280;
+    else if (currentPlan === "premium") planMonthlyCredits = 750;
 
     // Asignar créditos del mes con 90 días de caducidad si aún no se han entregado este mes
     if (planMonthlyCredits > 0 && lastMonthlyAssigned !== currentMonthKey) {
